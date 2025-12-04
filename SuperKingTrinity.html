@@ -1,0 +1,1885 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Superking Trinity</title>
+  <style>
+    body { 
+        background: #111; 
+        color: #eee; 
+        font-family: sans-serif; 
+        text-align: center; 
+        padding: 20px; 
+    }
+    canvas { 
+        background: #222; 
+        display: block; 
+        margin: 20px auto; 
+        border: 2px solid #0f0; 
+    }
+    /* Top Board/Log Styles */
+    #log, #position, #verseDisplay { 
+        margin: 20px auto; 
+        font-size: 18px; 
+        white-space: pre-line; 
+        text-align: left; 
+        max-width: 420px; 
+    }
+    button, input { 
+        margin: 8px; 
+        padding: 10px 20px; 
+        font-size: 16px; 
+    }
+    /* Separate styles for FEN inputs to prevent conflict */
+    #topFenInput {
+        width: 90%;
+        max-width: 400px;
+    }
+    #fenInput { /* TARGETED BY THE NEW LOGIC (aifen1) */
+        width: 100%;
+        max-width: 600px;
+        box-sizing: border-box;
+    }
+    #verseDisplay { 
+        color: #0f0; 
+        font-size: 20px; 
+        border-bottom: 2px solid #0f0;
+        padding-bottom: 10px;
+    }
+    /* Bottom AI Interface Styles */
+    .section {
+        margin: 20px auto;
+        padding: 10px;
+        border: 1px solid #333;
+        border-radius: 8px;
+        max-width: 800px;
+        text-align: left;
+    }
+    /* Add a divider between the two main components */
+    #interface-divider {
+        margin: 50px auto;
+        height: 4px;
+        background: #0f0;
+        width: 90%;
+        max-width: 800px;
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css"> </head>
+<body>
+
+  <h1><img src="data:image/webp;base64,UklGRiYFAABXRUJQVlA4IBoFAACQFgCdASpAAEAAPpE4mEiloyIhLBqsALASCWQAvj/3DDF3AVvi4JG3a52zTXqAd2ifE56gkCdwWoj8g+9P7X+ucRd/f9z7OQwLvNrKfdHsAfzH+0/9H1Ks7j1l7B3SgYfzKcJfLLimgD6qzLvEc2r1XgmMgX9lSTPKM+4NahCNjnTapBlSDAfNg2sW+thPJs9fbHoFOnw+k6Xbwfs0An8EemtxsP9TlJQU/FlmeRNefRP+oPE4WT/Ep9o4R2AA/vuzCQGz3MIJylDZjZf29QkIkBn3/ouhimCStse8h/ahKJ3uhAoFY8yKXmNW0NKAdD4R78bSkKyn8EHYY+KP405z4GSSQr1vI4fYfWVGFHntkTJdgUiYyN/XSZvcvMYuEe2z6/yC0TlhAt75f/Whya7z9lBfnHaIOsrw+YNVzITjpBoYerhE+E58PWeKwzrTX84hTm1+3S+BTmIbceQjAgEh08ps7jOaPOI/DQXLc642Yge+utYx5MKzT4+iReNcRepbLz68sxZKN1x/Hxft7aJTDAjuEDsJU9+ndfhq3nFOUUAdDyHirJePHo7u/wr5YMujlV/ceBXGQ/bnfzF6bc73TAqi/fHE53QbYhvsxfQpwZ/ic4JA8g1Dsq7n34ZhMVNvu6/Zv5Sr1VketJ51TEgnVaANzDnFhMmDEAX7s82gpRJE1mg+8gM4r/cjxi2tWsP8w2Y3oRg3mIU2aV67HxEKWgSroMCsFvnHfXPfIIKFjrILlnOQ+E0QgvEDYDEM6Ca6Bs8DQrAW7sn7tIqHy2ScgZ+nm4vjRR5K8t3eV4T3Rx13lPqqFcJDvV7Hlz2/Mk+kZaFxdYp32Kc+c+2RB7ngjfttMXJ5aj7Mqx/3IDgwWgRW34nzReEFbr/x7sqhmtx0jh8uGzsMyxPXzURsPZbFtKkEGzETsGlOp7hSMi9XMifx7sWUtXc+Fxd2HNEoQYBGw0p8aJYI3Gqsswn+bILicd5OjpGfVXI5qpbBS5rtkKxtbsRfv31166hsvrJCuETHHW84k+FMDsm+KagtWS/kiQx2xRIr64/akHMmQnf1W02mzUueoK7ooAp0GBdMssCTw180Y1cMqrIRWIimYbMl/40F+VH0a5Nex6w1kJt+jUNL/kffUxCHhuRDLmwppti9Gkxi27Exk2vpe5bOJsqvRB0KdOf+3qd4OBcDzaPC9/hws3iMRvJfyEUOxlvrcDsCvY5T9OAZpEciI3AO+kxxWD7Tb7HBi4OggU3+YlkqPTgKBvlYNeHmvnGMvTXT6hOLCs2mwE6xaGUBp1+n9QdtKBY7x052sKKKtHseqCgIRn7qWKI9u93thPjqYWmtjcponi19Vwt5Jcs5LVXoWLNnRaycVv8CLmMOg/7/sqT8UjquMXYRSDl2+Ff/V86LiBb5rEdM1qkKnNxZSlIRa0J6sKV9YHeRGVWK1O9IrQMLgMRhrqqAfdSoEbvzifVWPmlVOtI3xn0AsP3mMufU/5KWDiPwZGOiof9ZU6KvmUS88K3ZfJwJCILq5LwybmBdMQ/tYIlrJw49t0ARIJ1IFid2c0sXrOXo4CkSjTmXgOV1O8gErnAtfldvDV5lsNnjZhDm4/IZy0M1q9GTXVUFGrI3iAh0f6GUY6HNZTlB4YrCc5E6x99RzCBF0tdLwbrmhNBtdHtG3pUoL0Gkk3tp+JVY6XIiRvNrwdHdU6pVIXbPfYRaTvpXr25EcIxJRv1Xqxp9wc1OV4El9AAA" alt="White Superking" style="width:64px;height:64px;" /> <img src="data:image/webp;base64,UklGRlIFAABXRUJQVlA4IEYFAABQFwCdASpAAEAAPpE2lkgloqIhLhtriLASCWQAv2v3DRF8gkvw4G+3yu4CBItBvxfA9iL9jf53y77wb/J7N2V9j9+g/lfQX6waxh457AH8t/s//S/svsJZzXqb2EOj76I/67M8RJmOASMkPvr3PSkQijdXpu/BbrsbsDcEFHg0zWoQmgvZzitswYEk9RjRXt+oyp/W+AEvIVVok4FHa6P1PrQDjGz30B2xg9K20E0M859hQkLEFTfaojzv76BaQvrifwAA/v9jgbdMqsLoFSPRmrekX90tSn3FtWRfxdhBctt7Gon5eT0koDT3jUnmLkBOdyaBG7fmjoIwHpWWLyjknwAgvnrCEymw+0WbQHBvV0f0CU+EiWc10f38MU6PIiKXO2TyoLYBKpB1QGuSfuHq6gP+icw3azYPf67QW3IKU+DeM+rI7eOm1W+tz3q5QlsIdzpTTHH9BGNW+7O1V6/9VyeqU+WvPOcTzATZ11b0phB824f6rCHVjme08ZQcnzR+CLu3wmwvwErMolQBCDwJoL/Vngx8+HR8Q64JmtDs3MAccZfjD6r3EjizW0K1sszj8J9K2dhhVLQZIJzWOevUuU0qvdxhzq8HrQLRQrMQQpHa7RtRMyawJfmioVEzYHDcZxS+NPK94NPf7MUuKWcrGOgwI7nfmt7sVOAkxDyXy14MqUOSd+qS+ibNzyMIB8TAzwo6r/NkseheQLNAJJ2ZNlxCORcnr6MlHwdg6U5VR7kpH4HBk5Epup2DieIdvoJYbD7AhyaeeOG0scPHODtm84wAC9ixwaEzkOd0ZZX3nl5hxOXpuTY3MauikMkYVhNK4SxQQG/O+ymGXATv6Q17tZn5qqevcWCJYySeUpYZ8VETxnPP/UfdiTJPeF98dzsy7piq0Y/NsMqpg+jz1wWtrMolQExLlLuWREAY0ENvtG+lCQ7BXgVujRzcHcnQAaUriebzBZEGdGLN+5kD37JHTVgdCiV+9YBi2W+CLKwbA999dT0dcgePaGbcD1cNKZZtqt4IQb4MXfINE1sGd3hwCm888tIpM6hYf4v90CG+9fo64+CDAfJ/atZOrHrkCcxOozWY8dDYBh+3hzurXJwIdRMXwb7TikJlucg0EOv7/tuotW7r9oMRoRJ4u3+zRMUg0WsobooKxfl5nfatI/5G3pkAVH9GzzPMa55qIjCu27Ecb9f9/WjMlGJ1d5FbNOHjX840FqvNQgmXlVjS5V+miyamVv5hnBPym44EjxhWQI++b0IZOCM0lFVqx0nKhP1oKKjS7Whq2n7Cxxh8ot11U8tv7fQcbDA80JwhKt7XM4r4NK6Lz8xPOMNfgm9b3cvK+tgF1sULW44CgxEBOrPR25aHxixSv37gYpjf2ThERXQRMZniKYIsSVNL+z4QEdiGl5bGSylpM+etkB/LSS92G6t/SWUlTiQSrUZrWDMuQcKhfj2uHeC7X7T8voQVHkqSFeN3gD4KmjEYge0Akhu8edwX+R2/0GYfJ0DNG2rlq4ILWkefbZMiuz3GG0Veb9akvoVi3iYoRNB2VAlbzzUYrbE4HsO2OirwbRNTi2ezzZSb6etoKc1NE6xY8YE172CHQtGkAy81Lx1jryS5Hi3v3g469ngbuJ1rihl4x7KLAnP+NiNh4MXFiYlI+cPixFlkIaN4goDLepmEzRtUPIomV4hytr+ETCWG3MaGRjTWsMt9wPoegfP8dOXHcerYVc0Gddntkrbm/NVAYQmfpMDK966Y4Dt2mzdF3Xvz3Py0ilT1yrElvhQm951B+HJDSk7nF6w7gAA=" alt="Black Superking" style="width:64px;height:64px;" /> Superking Trinity Chessboard</h1>
+  <canvas id="boardCanvas" width="480" height="480"></canvas>
+
+    <div>
+    <button onclick="top_finishSuperkingMove()">Finish Move</button>
+    <button onclick="top_takeBackMove()">Take Back Move</button>
+    <button onclick="top_showPosition('w')">Show FEN w</button>
+    <button onclick="top_showPosition('b')">Show FEN b</button>
+    <button onclick="top_copyFENButtonAction()">Copy Full FEN (w)</button>
+    <button onclick="top_copyLog()">Copy Log</button>
+  </div>
+
+  <div>
+    <input id="topFenInput" placeholder="Paste FEN-style position here for TOP board">
+    <button onclick="top_loadPosition()">Load Position</button>
+  </div>
+
+  <div id="log">Move Log:</div>
+  <div id="position">Board Position:</div>
+  <div id="verseDisplay"></div>
+
+  <div id="interface-divider"></div>
+
+    <h2>SKT Board Interface</h2>
+
+  <div class="section">
+    <label for="fenInput"><strong>FEN Input (Bottom Interface / aifen1):</strong></label><br>
+        <textarea id="fenInput" rows="2" cols="80" placeholder="Paste FEN here..."></textarea>
+  </div>
+
+  <div class="section" style="text-align: center;">
+    <button onclick="bestMove()">Best Move</button>
+    <button onclick="bestMoveTwoPlies()">Best Move Two Plies</button>
+    <button onclick="loadFEN()">Load FEN</button>
+    <button onclick="applyBestMove()">Apply Best Move</button>
+    <button onclick="aiVsAiFifty(50)">AI vs AI 50 Cycles</button>
+    <button onclick="transferFinalFEN()">Transfer Final FEN</button>
+  </div>
+
+  <div class="section">
+    <label for="bestMoveDisplay"><strong>Best Move:</strong></label><br>
+    <div id="bestMoveDisplay" style="white-space: pre-wrap; min-height: 20px; padding: 10px; background: #f0f0f0; border-radius: 4px; color: #111;"></div>
+  </div>
+
+  <div class="section">
+    <label for="output"><strong>Path Output:</strong></label><br>
+    <textarea id="output" rows="10" cols="80" readonly></textarea>
+    </div>
+
+  <div class="section">
+    <label for="targets"><strong>Targets:</strong></label><br>
+    <pre id="targets" style="background: #f0f0f0; padding: 10px; border-radius: 4px; color: #111;"></pre>
+    </div>
+
+  <div class="section">
+    <label for="readBoardOutput"><strong>Read Board FEN:</strong></label><br>
+    <textarea id="readBoardOutput" rows="2" cols="80"></textarea>
+  </div>
+
+  <div class="section">
+    <label for="captureMoveOutput"><strong>Captured Move:</strong></label><br>
+    <textarea id="captureMoveOutput" rows="2" cols="80" readonly></textarea>
+    <label for="captureFENOutput"><strong>Captured FEN (Before Move):</strong></label><br>
+    <textarea id="captureFENOutput" rows="2" cols="80" readonly></textarea>
+  </div>
+
+  <div class="section">
+    <label for="appliedFENOutput"><strong>Applied Move FEN (After Move):</strong></label><br>
+    <textarea id="appliedFENOutput" rows="2" cols="80" readonly></textarea>
+  </div>
+
+  <div class="section">
+    <label for="finalFENOutput"><strong>Final FEN After Applying Best Move:</strong></label><br>
+    <textarea id="finalFENOutput" rows="2" cols="80" readonly></textarea>
+  </div>
+
+  <div class="section" style="text-align: center;">
+    <strong>Board:</strong><br><br>
+    <table id="board"></table>
+  </div>
+
+  <div class="section">
+    <label for="moveLogs"><strong>Move Logs (Cycles):</strong></label><br>
+    <textarea id="moveLogs" rows="12" cols="80" readonly></textarea>
+    <div style="text-align: right; margin-top: 5px;">
+      <button onclick="copyMoveLogs(event)">Copy Move Logs</button>
+    </div>
+  </div>
+
+    <script>
+    const canvas = document.getElementById("boardCanvas");
+    const ctx = canvas.getContext("2d");
+    const boardSize = 8;
+    const squareSize = canvas.width / boardSize;
+
+    let board = [];
+    let moveLog = [];
+    let history = [];
+    let selected = null;
+    let superkingPath = [];
+    let lastMove = null;
+
+    const verses = [
+      "John 3:16 For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.",
+      "1 John 5:12 He that hath the Son hath life; and he that hath not the Son of God hath not life.",
+      "Matthew 28:19 Go ye therefore, and teach all nations, baptizing them in the name of the Father, and of the Son, and of the Holy Ghost."
+    ];
+    let verseIndex = 0;
+
+    /* --- Piece Mappings & UTILS (unchanged) --- */
+
+    // Piece Emojis (Symbol to FEN)
+    const pieceToFENMap = {
+      '♙': 'P', '♘': 'N', '♗': 'B', '♖': 'R', '♕': 'Q', '♔': 'K',
+      '♟': 'p', '♞': 'n', '♝': 'b', '♜': 'r', '♛': 'q', 'k': 'k',
+      '👑': 'S', // White Superking
+      '♚': 's'  // Black Superking (MODIFIED)
+    };
+
+    // FEN to Piece Emojis (FEN to Symbol)
+    const FENtoPieceMap = {
+      'P': '♙', 'N': '♘', 'B': '♗', 'R': '♖', 'Q': '♕', 'K': '♔', 'S': '👑', // White Superking
+      'p': '♟', 'n': '♞', 'b': '♝', 'r': '♜', 'q': '♛', 'k': '♚', 's': '♚' // Black Superking (MODIFIED)
+    };
+    
+    // Promotion maps
+    const whitePromotionMap = { 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘' };
+    const blackPromotionMap = { 'Q': '♛', 'R': '♜', 'B': '♝', 'N': '♞' };
+
+    function top_pieceToFEN(piece) {
+      return pieceToFENMap[piece] || '';
+    }
+
+    function top_FENtoPiece(char) {
+      return FENtoPieceMap[char] || '';
+    }
+
+    function top_isWhite(piece) {
+      // Check if the piece is a white symbol (White Superking is '👑')
+      return '♙♘♗♖♕♔👑'.includes(piece);
+    }
+    
+    function top_copyBoard(src) {
+      return src.map(row => row.slice());
+    }
+
+    function top_coordsToAlgebraic(r, c) {
+      return String.fromCharCode(97 + c) + (8 - r);
+    }
+    
+    function top_parseMove(moveStr) {
+        // Example: "♙e2e4" → ['♙', 'e2', 'e4']
+        if (moveStr.startsWith("S") || moveStr.startsWith("s")) return [moveStr.slice(0, 1), moveStr.slice(1)];
+        const piece = moveStr[0];
+        const from = moveStr.slice(1, 3);
+        const to = moveStr.slice(3, 5);
+        const promotion = moveStr.length > 5 ? moveStr.slice(5, 6) : '';
+        return [piece, from, to, promotion];
+    }
+    
+    /**
+     * Prompts the user for a promotion choice (Q, R, B, N)
+     */
+    function top_handlePawnPromotion(r, c, piece) {
+        const isPawn = piece === '♙' || piece === '♟';
+        if (!isPawn) return piece;
+
+        const isWhitePiece = top_isWhite(piece);
+        const lastRank = isWhitePiece ? 0 : boardSize - 1;
+
+        if (r === lastRank) {
+            let choice = prompt("Pawn Promotion! Choose a piece: Q (Queen), R (Rook), B (Bishop), or N (Knight)").toUpperCase();
+            
+            // Validate and convert choice
+            if (isWhitePiece) {
+                return whitePromotionMap[choice] || '♕'; // Default to Queen
+            } else {
+                return blackPromotionMap[choice] || '♛'; // Default to Queen
+            }
+        }
+        return piece;
+    }
+
+    /* --- Piece Movement Logic (unchanged) --- */
+    
+    function top_getRookMoves(b, r, c) {
+        const moves = [];
+        const pieceColor = top_isWhite(b[r][c]);
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; 
+
+        for (const [dr, dc] of directions) {
+            for (let i = 1; i < boardSize; i++) {
+                const nr = r + dr * i;
+                const nc = c + dc * i;
+                if (nr < 0 || nr >= boardSize || nc < 0 || nc >= boardSize) break;
+
+                const target = b[nr][nc];
+                if (target === '') {
+                    moves.push({ r: nr, c: nc });
+                } else {
+                    if (top_isWhite(target) !== pieceColor) {
+                        moves.push({ r: nr, c: nc }); // Capture
+                    }
+                    break; // Blocked
+                }
+            }
+        }
+        return moves;
+    }
+
+    function top_getBishopMoves(b, r, c) {
+        const moves = [];
+        const pieceColor = top_isWhite(b[r][c]);
+        const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+
+        for (const [dr, dc] of directions) {
+            for (let i = 1; i < boardSize; i++) {
+                const nr = r + dr * i;
+                const nc = c + dc * i;
+                if (nr < 0 || nr >= boardSize || nc < 0 || nc >= boardSize) break;
+
+                const target = b[nr][nc];
+                if (target === '') {
+                    moves.push({ r: nr, c: nc });
+                } else {
+                    if (top_isWhite(target) !== pieceColor) {
+                        moves.push({ r: nr, c: nc }); // Capture
+                    }
+                    break; // Blocked
+                }
+            }
+        }
+        return moves;
+    }
+    
+    function top_getQueenMoves(b, r, c) {
+        return [
+            ...top_getRookMoves(b, r, c),
+            ...top_getBishopMoves(b, r, c)
+        ];
+    }
+    
+    function top_getKnightMoves(b, r, c) {
+        const moves = [];
+        const pieceColor = top_isWhite(b[r][c]);
+        const deltas = [
+            [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+            [1, -2], [1, 2], [2, -1], [2, 1]
+        ];
+        
+        for (const [dr, dc] of deltas) {
+            const nr = r + dr;
+            const nc = c + dc;
+            if (nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize) {
+                const target = b[nr][nc];
+                if (target === '' || top_isWhite(target) !== pieceColor) {
+                    moves.push({ r: nr, c: nc });
+                }
+            }
+        }
+        return moves;
+    }
+    
+    function top_getKingMoves(b, r, c) {
+        const moves = [];
+        const pieceColor = top_isWhite(b[r][c]);
+        for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+                if (dr === 0 && dc === 0) continue;
+                const nr = r + dr;
+                const nc = c + dc;
+                if (nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize) {
+                    const target = b[nr][nc];
+                    if (target === '' || top_isWhite(target) !== pieceColor) {
+                        moves.push({ r: nr, c: nc });
+                    }
+                }
+            }
+        }
+        return moves;
+    }
+
+    function top_getPawnMoves(b, r, c) {
+        const moves = [];
+        const piece = b[r][c];
+        const isWhitePiece = top_isWhite(piece);
+        const dir = isWhitePiece ? -1 : 1;
+        const startRow = isWhitePiece ? 6 : 1;
+        const finalRank = isWhitePiece ? 0 : boardSize - 1;
+
+        // 1. One square forward
+        const nr1 = r + dir;
+        if (nr1 >= 0 && nr1 < boardSize && b[nr1][c] === '') {
+            moves.push({ r: nr1, c: c, promote: nr1 === finalRank });
+            
+            // 2. Two squares forward from starting rank
+            const nr2 = r + 2 * dir;
+            if (r === startRow && nr2 >= 0 && nr2 < boardSize && b[nr2][c] === '') {
+                moves.push({ r: nr2, c: c });
+            }
+        }
+
+        // 3. Diagonal captures & Promotion captures
+        for (let dc of [-1, 1]) {
+            const nr = r + dir;
+            const nc = c + dc;
+            if (nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize) {
+                const target = b[nr][nc];
+                if (target !== '' && top_isWhite(target) !== isWhitePiece) {
+                    moves.push({ r: nr, c: nc, capture: true, promote: nr === finalRank });
+                }
+
+                // 4. En passant (based on the last move)
+                if (lastMove && r === (isWhitePiece ? 3 : 4)) {
+                    const [, fromAlg, toAlg] = top_parseMove(lastMove);
+                    const toCol = toAlg.charCodeAt(0) - 97;
+
+                    // Check if opponent just moved a pawn two squares next to the current pawn
+                    const enemyPawn = isWhitePiece ? '♟' : '♙';
+                    if (b[r][nc] === enemyPawn) { // Check if an enemy pawn is *beside* the capturing pawn
+                        // Note: A real implementation would also check if the *last move* was a two-square advance by that pawn
+                        moves.push({ r: nr, c: nc, enPassant: true, captureCol: nc });
+                    }
+                }
+            }
+        }
+        return moves;
+    }
+
+    function top_getValidMoves(r, c) {
+        const piece = board[r][c];
+        const pieceFEN = top_pieceToFEN(piece).toUpperCase(); // Use FEN for switch
+
+        let moves = [];
+        switch (pieceFEN) {
+            case 'R': moves = top_getRookMoves(board, r, c); break;
+            case 'N': moves = top_getKnightMoves(board, r, c); break;
+            case 'B': moves = top_getBishopMoves(board, r, c); break;
+            case 'Q': moves = top_getQueenMoves(board, r, c); break;
+            case 'K': moves = top_getKingMoves(board, r, c); break;
+            case 'S': moves = top_getKingMoves(board, r, c); break; // Superking follows King's simple move rules for 1-square moves
+            case 'P': moves = top_getPawnMoves(board, r, c); break;
+            default: return [];
+        }
+        
+        // Return only the basic coordinates
+        return moves.map(m => ({ r: m.r, c: m.c }));
+    }
+
+    /* --- Drawing and Board State (unchanged) --- */
+
+    function top_drawBoard() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let r = 0; r < boardSize; r++) {
+        for (let c = 0; c < boardSize; c++) {
+          ctx.fillStyle = (r + c) % 2 === 0 ? "#555" : "#777";
+          ctx.fillRect(c * squareSize, r * squareSize, squareSize, squareSize);
+        }
+      }
+
+      // Selected square highlight
+      if (selected) {
+        ctx.fillStyle = "rgba(255,255,0,0.4)";
+        ctx.fillRect(selected.c * squareSize, selected.r * squareSize, squareSize, squareSize);
+      }
+      
+      // Superking path highlight
+      superkingPath.forEach((p, i) => {
+          ctx.fillStyle = i === superkingPath.length - 1 ? "rgba(0, 255, 0, 0.7)" : "rgba(0, 255, 0, 0.3)";
+          ctx.fillRect(p.c * squareSize, p.r * squareSize, squareSize, squareSize);
+      });
+
+      // Draw pieces
+      ctx.font = "46px Arial"; 
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      for (let r = 0; r < boardSize; r++) {
+        for (let c = 0; c < boardSize; c++) {
+          const piece = board[r][c];
+          if (piece) {
+            // top_isWhite is correct for all pieces including '♚'
+            ctx.fillStyle = top_isWhite(piece) ? "#fff" : "#000"; 
+ctx.fillStyle = top_isWhite(piece) ? "#fff" : "#000";
+
+if (piece === "👑") {
+    let img = new Image();
+    img.src = "data:image/webp;base64,UklGRiYFAABXRUJQVlA4IBoFAACQFgCdASpAAEAAPpE4mEiloyIhLBqsALASCWQAvj/3DDF3AVvi4JG3a52zTXqAd2ifE56gkCdwWoj8g+9P7X+ucRd/f9z7OQwLvNrKfdHsAfzH+0/9H1Ks7j1l7B3SgYfzKcJfLLimgD6qzLvEc2r1XgmMgX9lSTPKM+4NahCNjnTapBlSDAfNg2sW+thPJs9fbHoFOnw+k6Xbwfs0An8EemtxsP9TlJQU/FlmeRNefRP+oPE4WT/Ep9o4R2AA/vuzCQGz3MIJylDZjZf29QkIkBn3/ouhimCStse8h/ahKJ3uhAoFY8yKXmNW0NKAdD4R78bSkKyn8EHYY+KP405z4GSSQr1vI4fYfWVGFHntkTJdgUiYyN/XSZvcvMYuEe2z6/yC0TlhAt75f/Whya7z9lBfnHaIOsrw+YNVzITjpBoYerhE+E58PWeKwzrTX84hTm1+3S+BTmIbceQjAgEh08ps7jOaPOI/DQXLc642Yge+utYx5MKzT4+iReNcRepbLz68sxZKN1x/Hxft7aJTDAjuEDsJU9+ndfhq3nFOUUAdDyHirJePHo7u/wr5YMujlV/ceBXGQ/bnfzF6bc73TAqi/fHE53QbYhvsxfQpwZ/ic4JA8g1Dsq7n34ZhMVNvu6/Zv5Sr1VketJ51TEgnVaANzDnFhMmDEAX7s82gpRJE1mg+8gM4r/cjxi2tWsP8w2Y3oRg3mIU2aV67HxEKWgSroMCsFvnHfXPfIIKFjrILlnOQ+E0QgvEDYDEM6Ca6Bs8DQrAW7sn7tIqHy2ScgZ+nm4vjRR5K8t3eV4T3Rx13lPqqFcJDvV7Hlz2/Mk+kZaFxdYp32Kc+c+2RB7ngjfttMXJ5aj7Mqx/3IDgwWgRW34nzReEFbr/x7sqhmtx0jh8uGzsMyxPXzURsPZbFtKkEGzETsGlOp7hSMi9XMifx7sWUtXc+Fxd2HNEoQYBGw0p8aJYI3Gqsswn+bILicd5OjpGfVXI5qpbBS5rtkKxtbsRfv31166hsvrJCuETHHW84k+FMDsm+KagtWS/kiQx2xRIr64/akHMmQnf1W02mzUueoK7ooAp0GBdMssCTw180Y1cMqrIRWIimYbMl/40F+VH0a5Nex6w1kJt+jUNL/kffUxCHhuRDLmwppti9Gkxi27Exk2vpe5bOJsqvRB0KdOf+3qd4OBcDzaPC9/hws3iMRvJfyEUOxlvrcDsCvY5T9OAZpEciI3AO+kxxWD7Tb7HBi4OggU3+YlkqPTgKBvlYNeHmvnGMvTXT6hOLCs2mwE6xaGUBp1+n9QdtKBY7x052sKKKtHseqCgIRn7qWKI9u93thPjqYWmtjcponi19Vwt5Jcs5LVXoWLNnRaycVv8CLmMOg/7/sqT8UjquMXYRSDl2+Ff/V86LiBb5rEdM1qkKnNxZSlIRa0J6sKV9YHeRGVWK1O9IrQMLgMRhrqqAfdSoEbvzifVWPmlVOtI3xn0AsP3mMufU/5KWDiPwZGOiof9ZU6KvmUS88K3ZfJwJCILq5LwybmBdMQ/tYIlrJw49t0ARIJ1IFid2c0sXrOXo4CkSjTmXgOV1O8gErnAtfldvDV5lsNnjZhDm4/IZy0M1q9GTXVUFGrI3iAh0f6GUY6HNZTlB4YrCc5E6x99RzCBF0tdLwbrmhNBtdHtG3pUoL0Gkk3tp+JVY6XIiRvNrwdHdU6pVIXbPfYRaTvpXr25EcIxJRv1Xqxp9wc1OV4El9AAA";
+    ctx.drawImage(img, c * squareSize, r * squareSize, squareSize, squareSize);
+} else if (piece === "♚") {
+    let img = new Image();
+    img.src = "data:image/webp;base64,UklGRlIFAABXRUJQVlA4IEYFAABQFwCdASpAAEAAPpE2lkgloqIhLhtriLASCWQAv2v3DRF8gkvw4G+3yu4CBItBvxfA9iL9jf53y77wb/J7N2V9j9+g/lfQX6waxh457AH8t/s//S/svsJZzXqb2EOj76I/67M8RJmOASMkPvr3PSkQijdXpu/BbrsbsDcEFHg0zWoQmgvZzitswYEk9RjRXt+oyp/W+AEvIVVok4FHa6P1PrQDjGz30B2xg9K20E0M859hQkLEFTfaojzv76BaQvrifwAA/v9jgbdMqsLoFSPRmrekX90tSn3FtWRfxdhBctt7Gon5eT0koDT3jUnmLkBOdyaBG7fmjoIwHpWWLyjknwAgvnrCEymw+0WbQHBvV0f0CU+EiWc10f38MU6PIiKXO2TyoLYBKpB1QGuSfuHq6gP+icw3azYPf67QW3IKU+DeM+rI7eOm1W+tz3q5QlsIdzpTTHH9BGNW+7O1V6/9VyeqU+WvPOcTzATZ11b0phB824f6rCHVjme08ZQcnzR+CLu3wmwvwErMolQBCDwJoL/Vngx8+HR8Q64JmtDs3MAccZfjD6r3EjizW0K1sszj8J9K2dhhVLQZIJzWOevUuU0qvdxhzq8HrQLRQrMQQpHa7RtRMyawJfmioVEzYHDcZxS+NPK94NPf7MUuKWcrGOgwI7nfmt7sVOAkxDyXy14MqUOSd+qS+ibNzyMIB8TAzwo6r/NkseheQLNAJJ2ZNlxCORcnr6MlHwdg6U5VR7kpH4HBk5Epup2DieIdvoJYbD7AhyaeeOG0scPHODtm84wAC9ixwaEzkOd0ZZX3nl5hxOXpuTY3MauikMkYVhNK4SxQQG/O+ymGXATv6Q17tZn5qqevcWCJYySeUpYZ8VETxnPP/UfdiTJPeF98dzsy7piq0Y/NsMqpg+jz1wWtrMolQExLlLuWREAY0ENvtG+lCQ7BXgVujRzcHcnQAaUriebzBZEGdGLN+5kD37JHTVgdCiV+9YBi2W+CLKwbA999dT0dcgePaGbcD1cNKZZtqt4IQb4MXfINE1sGd3hwCm888tIpM6hYf4v90CG+9fo64+CDAfJ/atZOrHrkCcxOozWY8dDYBh+3hzurXJwIdRMXwb7TikJlucg0EOv7/tuotW7r9oMRoRJ4u3+zRMUg0WsobooKxfl5nfatI/5G3pkAVH9GzzPMa55qIjCu27Ecb9f9/WjMlGJ1d5FbNOHjX840FqvNQgmXlVjS5V+miyamVv5hnBPym44EjxhWQI++b0IZOCM0lFVqx0nKhP1oKKjS7Whq2n7Cxxh8ot11U8tv7fQcbDA80JwhKt7XM4r4NK6Lz8xPOMNfgm9b3cvK+tgF1sULW44CgxEBOrPR25aHxixSv37gYpjf2ThERXQRMZniKYIsSVNL+z4QEdiGl5bGSylpM+etkB/LSS92G6t/SWUlTiQSrUZrWDMuQcKhfj2uHeC7X7T8voQVHkqSFeN3gD4KmjEYge0Akhu8edwX+R2/0GYfJ0DNG2rlq4ILWkefbZMiuz3GG0Veb9akvoVi3iYoRNB2VAlbzzUYrbE4HsO2OirwbRNTi2ezzZSb6etoKc1NE6xY8YE172CHQtGkAy81Lx1jryS5Hi3v3g469ngbuJ1rihl4x7KLAnP+NiNh4MXFiYlI+cPixFlkIaN4goDLepmEzRtUPIomV4hytr+ETCWG3MaGRjTWsMt9wPoegfP8dOXHcerYVc0Gddntkrbm/NVAYQmfpMDK966Y4Dt2mzdF3Xvz3Py0ilT1yrElvhQm951B+HJDSk7nF6w7gAA=";
+    ctx.drawImage(img, c * squareSize, r * squareSize, squareSize, squareSize);
+} else {
+    ctx.fillText(piece, c * squareSize + squareSize / 2, r * squareSize + squareSize / 2 + 2);
+}
+          }
+        }
+      }
+    }
+
+    /* --- EVENT HANDLERS (unchanged) --- */
+
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const c = Math.floor(x / squareSize);
+      const r = Math.floor(y / squareSize);
+      const clicked = board[r][c];
+
+      if (selected) {
+        const piece = board[selected.r][selected.c];
+
+        // 1. Superking Path Logic (White is '👑', Black is '♚')
+        if (piece === '👑' || piece === '♚') {
+          const last = superkingPath[superkingPath.length - 1] || selected;
+          const isAdjacent = Math.abs(last.r - r) <= 1 && Math.abs(last.c - c) <= 1;
+          const isDuplicate = superkingPath.some((p, i) => i > 0 && p.r === r && p.c === c);
+          
+          if (isAdjacent && superkingPath.length < 4) {
+            superkingPath.push({ r, c });
+            top_drawBoard();
+            return;
+          } else if (!isAdjacent) {
+            alert("Each Superking move must be to an adjacent square!");
+          }
+        } 
+        
+        // 2. Standard Move Logic
+        const allPawnMoves = top_getPawnMoves(board, selected.r, selected.c);
+        const validMoves = top_getValidMoves(selected.r, selected.c);
+        const targetMove = validMoves.find(m => m.r === r && m.c === c);
+
+        if (targetMove) {
+          history.push(top_copyBoard(board));
+          
+          let notation = piece + top_coordsToAlgebraic(selected.r, selected.c) + top_coordsToAlgebraic(r, c);
+          let newPiece = piece;
+          
+          // Check for promotion (full move list needed for the flag)
+          const promotionFlag = allPawnMoves.find(m => m.r === r && m.c === c && m.promote);
+          if (promotionFlag) {
+              newPiece = top_handlePawnPromotion(r, c, piece);
+              notation += top_pieceToFEN(newPiece).toUpperCase(); // Add promotion notation (e.g., Q)
+          }
+
+          // Check for en passant (full move list needed for the flag)
+          const enPassantFlag = allPawnMoves.find(m => m.r === r && m.c === c && m.enPassant);
+          if (enPassantFlag) {
+              // Clear the captured pawn
+              const capturedPawnRow = selected.r;
+              board[capturedPawnRow][enPassantFlag.captureCol] = '';
+              notation += " e.p.";
+          }
+          
+          // If a piece was captured, notation should reflect it
+          if (clicked !== '') {
+              notation = notation.slice(0, 3) + 'x' + notation.slice(3);
+          }
+
+          board[r][c] = newPiece; 
+          board[selected.r][selected.c] = '';
+          
+          lastMove = notation;
+          moveLog.push(notation);
+          selected = null;
+          superkingPath = [];
+          
+          top_drawBoard();
+          top_updateLog();
+          top_showVerse();
+          
+        } else {
+          // Clear selection or select a new piece of the same color
+          if (clicked && top_isWhite(clicked) === top_isWhite(piece)) {
+              selected = { r, c };
+              superkingPath = (clicked === '👑' || clicked === '♚') ? [{ r, c }] : [];
+          } else {
+              selected = null;
+              superkingPath = [];
+          }
+        }
+      } else if (clicked) {
+        // No piece selected, so select the clicked piece
+        selected = { r, c };
+        if (clicked === '👑' || clicked === '♚') {
+          superkingPath = [{ r, c }];
+        }
+      } else {
+        // Clicked on an empty square with no piece selected
+        selected = null;
+        superkingPath = [];
+      }
+
+      top_drawBoard();
+    });
+
+    // *** SUPERKING MOVE LOGIC (UPDATED: Removed capture notation) ***
+    function top_finishSuperkingMove() {
+      const piece = board[selected.r][selected.c];
+      if (!selected || (piece !== '👑' && piece !== '♚') || superkingPath.length < 2) {
+        alert("Superking move requires at least two squares and the Superking to be selected!");
+        return;
+      }
+
+      history.push(top_copyBoard(board));
+
+      const path = superkingPath.map(sq => top_coordsToAlgebraic(sq.r, sq.c));
+      const first = superkingPath[0];
+      const last = superkingPath[superkingPath.length - 1];
+
+      // Determine notation character ('S' for white, 's' for black)
+      const superkingNotation = top_isWhite(piece) ? 'S' : 's';
+
+      // 1. Clear pieces from intermediate squares (index 1 up to, but not including, the last square)
+      for (let i = 1; i < superkingPath.length - 1; i++) {
+          const intermediate = superkingPath[i];
+          board[intermediate.r][intermediate.c] = '';
+      }
+
+      // 2. Move piece to the last square (this handles the final capture)
+      board[last.r][last.c] = piece; // Use the original piece symbol ('👑' or '♚')
+      
+      // 3. Clear the starting square only if the piece actually moved
+      if (first.r !== last.r || first.c !== last.c) {
+        board[first.r][first.c] = '';
+      }
+
+      // Construct the move notation (NO CAPTURE NOTATION APPENDED)
+      let notation = superkingNotation + path.join("");
+      
+      lastMove = notation;
+      moveLog.push(notation);
+      selected = null;
+      superkingPath = [];
+
+      top_drawBoard();
+      top_updateLog();
+      top_showVerse();
+    }
+    
+    function top_takeBackMove() {
+      if (history.length > 1) {
+        history.pop();
+        board = top_copyBoard(history[history.length - 1]);
+        moveLog.pop();
+        lastMove = moveLog.length > 0 ? moveLog[moveLog.length - 1] : null;
+        selected = null;
+        superkingPath = [];
+        top_drawBoard();
+        top_updateLog();
+      }
+    }
+
+    /* --- FEN & IO (unchanged from last step) --- */
+
+    function top_applyFEN(fen) {
+      const parts = fen.trim().split(' ');
+      const ranks = parts[0].split('/');
+      board = Array.from({length: boardSize}, () => Array(boardSize).fill('')); // Clear board
+
+      for (let r = 0; r < boardSize; r++) {
+        let row = ranks[r] || '';
+        let c = 0;
+        for (let ch of row) {
+          if (c >= boardSize) break;
+          if (!isNaN(ch)) {
+            c += parseInt(ch);
+          } else {
+            board[r][c] = top_FENtoPiece(ch);
+            c++;
+          }
+        }
+      }
+    }
+
+
+
+    function top_loadPosition() {
+      // NOTE: This function now reads from 'topFenInput'
+      const fen = document.getElementById("topFenInput").value; 
+      if (fen) {
+        top_applyFEN(fen);
+        history = [top_copyBoard(board)];
+        moveLog = [];
+        selected = null;
+        superkingPath = [];
+        lastMove = null;
+        top_updateLog();
+        // Since the loaded FEN might have turn data, we read it or default to 'w'
+        const parts = fen.trim().split(' ');
+        const loadColor = (parts.length > 1 && parts[1].toLowerCase() === 'b') ? 'b' : 'w';
+        // Show position also triggers the full FEN transfer to the bottom AI's input
+        top_showPosition(loadColor); 
+        top_drawBoard();
+      }
+    }
+    
+    function top_updateLog() {
+      document.getElementById("log").textContent = "Move Log:\n" + moveLog.join("\n");
+    }
+
+    function top_copyFENButtonAction() {
+      const fullFEN = top_showPosition('w'); // Generates full FEN (and updates the bottom fenInput)
+      top_copyToClipboard(fullFEN).then(() => alert('FEN copied!')).catch(err => alert('Failed to copy FEN: ' + err));
+    }
+
+    // *** NEW FUNCTION to copy the contents of the Move Log ***
+    function top_copyLog() {
+        // Get the text content, removing the "Move Log:\n" header
+        const logContent = document.getElementById("log").textContent.replace("Move Log:\n", "");
+        top_copyToClipboard(logContent).then(() => alert('Move Log copied!')).catch(err => alert('Failed to copy Move Log: ' + err));
+    }
+
+    function top_copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      return new Promise((resolve, reject) => {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          resolve();
+        } catch (err) {
+          document.body.removeChild(textarea);
+          reject(err);
+        }
+      });
+    }
+    
+    /* --- Verse Logic (unchanged) --- */
+
+    function top_showVerse() {
+      const verseDisplay = document.getElementById("verseDisplay");
+      if (verseDisplay) {
+        verseDisplay.textContent = verses[verseIndex];
+        verseIndex = (verseIndex + 1) % verses.length;
+      }
+    }
+
+    /* --- INITIALIZATION (unchanged) --- */
+    top_initBoard();
+
+    function top_initBoard() {
+      board = Array.from({length: boardSize}, () => Array(boardSize).fill(''));
+      // Starting FEN for board setup: rnbqsbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQSBNR
+      const setup = "rnbqsbnr/ppppp1pp/5p2/8/8/5P2/PPPPP1PP/RNBQSBNR"; 
+      top_applyFEN(setup);
+      history = [top_copyBoard(board)];
+      moveLog = [];
+      selected = null;
+      superkingPath = [];
+      lastMove = null;
+      top_drawBoard();
+      top_updateLog();
+      top_showPosition('w'); // Initial position displays 'w' to move (and transfers full FEN to bottom input)
+    }
+  </script>
+
+
+
+
+///capture.js
+<script> 
+///capture.js
+/* capture.js – capture the best move + show FEN after applying it */
+function captureMove() {
+  // 1. Grab UI values
+  const bestMoveText = document.getElementById("bestMoveDisplay").textContent.trim();
+  const currentFEN    = document.getElementById("fenInput").value.trim();
+
+  // 2. Parse move & score
+  const moveMatch = bestMoveText.match(/Best Move:\s*(.*?)\s*\|/);
+  const scoreMatch = bestMoveText.match(/\|\s*Score:\s*(\d+)/);
+
+  const cleanedMove = moveMatch ? moveMatch[1].replace(/â†’|→|->/g, "").trim() : "Unavailable";
+  const score       = scoreMatch ? scoreMatch[1] : "Unknown";
+
+  // 3. Show captured move & original FEN
+  document.getElementById("captureMoveOutput").value = `${cleanedMove} | Score: ${score}`;
+  document.getElementById("captureFENOutput").value  = currentFEN;
+
+  // 4. Apply the move and show the new FEN
+  const newFEN = applyMoveToFEN(currentFEN, cleanedMove);
+  document.getElementById("appliedFENOutput").value = newFEN;
+}
+
+/* ------------------------------------------------------------------
+   Helper: apply a path move (exactly like your Python script)
+   ------------------------------------------------------------------ */
+function applyMoveToFEN(fen, pathStr) {
+  if (!pathStr || pathStr === "Unavailable") return fen;
+
+  // ---- parse FEN parts ------------------------------------------------
+  const parts = fen.split(/\s+/);
+  const boardRows = parts[0].split('/');
+  const turn = parts[1] || 'w';
+  const castling = parts[2] || '-';
+  const enPassant = parts[3] || '-';
+  const halfmove = parts[4] || '0';
+  const fullmove = parts[5] || '1';
+
+  // ---- build 8x8 board ------------------------------------------------
+  const board = [];
+  for (let r of boardRows) {
+    const row = [];
+    for (let ch of r) {
+      if (/\d/.test(ch)) {
+        row.push(...Array(+ch).fill(null));
+      } else {
+        row.push(ch);
+      }
+    }
+    board.push(row);
+  }
+
+  // ---- parse path: "(file,rank) (file,rank) ..." ----------------------
+  const coordRE = /\((\d+),(\d+)\)/g;
+  const matches = [...pathStr.matchAll(coordRE)];
+  if (matches.length < 2) return fen;               // need at least start+end
+
+  const coords = matches.map(m => {
+    const file = +m[1];      // 1-8 (a-h)
+    const rank = +m[2];      // 1-8 (bottom-top)
+    return { r: 8 - rank, c: file - 1 };   // 0-based row/col
+  });
+
+  const start = coords[0];
+  const end   = coords[coords.length - 1];
+
+  const piece = board[start.r][start.c];
+  if (!piece) return fen;                    // nothing to move
+
+  // ---- perform the move -----------------------------------------------
+  board[start.r][start.c] = null;
+  const captured = board[end.r][end.c];
+  board[end.r][end.c] = piece;
+
+  // ---- update FEN metadata --------------------------------------------
+  const newTurn = turn === 'w' ? 'b' : 'w';
+
+  const isPawn = piece.toLowerCase() === 'p';
+  const isCapture = captured !== null;
+  const newHalf = (isPawn || isCapture) ? '0' : String(+halfmove + 1);
+
+  const newFull = turn === 'b' ? String(+fullmove + 1) : fullmove;
+
+  // castling – strip rights for the side that moved a king
+  let newCast = castling;
+  if (piece.toLowerCase() === 'k') {
+    const side = piece === 'k' ? 'kq' : 'KQ';
+    newCast = newCast.replace(new RegExp(`[${side}]`, 'g'), '');
+  }
+
+  const newEP = '-';   // simplified – real engine would compute it
+
+  // ---- rebuild FEN string ---------------------------------------------
+  const fenRows = board.map(row => {
+    let str = '';
+    let empty = 0;
+    for (let cell of row) {
+      if (cell === null) { empty++; }
+      else {
+        if (empty) { str += empty; empty = 0; }
+        str += cell;
+      }
+    }
+    if (empty) str += empty;
+    return str;
+  });
+
+  return `${fenRows.join('/')} ${newTurn} ${newCast} ${newEP} ${newHalf} ${newFull}`;
+}
+
+ </script>
+
+
+///bestmove.js
+<script> 
+function bestMove() {
+  const output = document.getElementById("output").value;
+  const lines = output.split("\n");
+  const moveLines = lines.filter(line => line.includes("→") && line.includes("Score:"));
+
+  if (moveLines.length === 0) {
+    document.getElementById("bestMoveDisplay").textContent = "No valid scored paths found.";
+    return;
+  }
+
+  // Find the highest score and return the full line
+  let topScore = -Infinity;
+  let bestLine = "";
+
+  moveLines.forEach(line => {
+    const scoreMatch = line.match(/Score:\s*(\d+)/);
+    if (scoreMatch) {
+      const score = parseInt(scoreMatch[1]);
+      if (score > topScore) {
+        topScore = score;
+        bestLine = line;
+      }
+    }
+  });
+
+  document.getElementById("bestMoveDisplay").textContent = `Best Move: ${bestLine}`;
+}
+
+ </script>
+
+
+///r.js
+<script> 
+function rookPaths(x, y) {
+  const directions = [[1,0], [-1,0], [0,1], [0,-1]];
+  return linearPaths(x, y, directions);
+}
+</script>
+
+
+///q.js
+<script> 
+function queenPaths(x, y) {
+  const directions = [
+    [1,0], [-1,0], [0,1], [0,-1],
+    [1,1], [1,-1], [-1,1], [-1,-1]
+  ];
+  return linearPaths(x, y, directions);
+}
+</script>
+
+///b.js
+<script> 
+function bishopPaths(x, y) {
+  const directions = [[1,1], [1,-1], [-1,1], [-1,-1]];
+  return linearPaths(x, y, directions);
+}
+</script>
+
+
+///n.js
+<script> 
+function knightPaths(x, y) {
+  const moves = [
+    [1, 2], [2, 1], [-1, 2], [-2, 1],
+    [1, -2], [2, -1], [-1, -2], [-2, -1]
+  ];
+
+  const onBoard = ([a, b]) => a >= 1 && a <= 8 && b >= 1 && b <= 8;
+  const isObstacle = ([a, b]) => obstacles.includes(`${a},${b}`);
+  const getScore = ([a, b]) => targets.get(`${a},${b}`) || 0;
+
+  const paths = [];
+
+  for (let [dx, dy] of moves) {
+    const nx = x + dx;
+    const ny = y + dy;
+    if (onBoard([nx, ny]) && !isObstacle([nx, ny])) {
+      const path = [[x, y], [nx, ny]];
+      const score = getScore([nx, ny]);
+      paths.push({ path, score });
+    }
+  }
+
+  paths.sort((a, b) => b.score - a.score || a.path.length - b.path.length);
+  return paths;
+}
+ </script>
+
+
+
+///p.js
+<script>
+function pawnPaths(x, y, isWhite = true) {
+  const direction = isWhite ? 1 : -1;
+  const startRank = isWhite ? 2 : 7;
+  const promotionRank = isWhite ? 8 : 1;
+
+  const fenInput = document.getElementById("fenInput");
+  const enPassant = fenInput ? fenInput.value.split(" ")[3] : '-';
+
+  const onBoard = ([a, b]) => a >= 1 && a <= 8 && b >= 1 && b <= 8;
+  const isObstacle = ([a, b]) => obstacles.includes(`${a},${b}`);
+  const getScore = ([a, b]) => targets.get(`${a},${b}`) || 0;
+
+  const pieceValues = { Q: 9, R: 3.5, N: 3, B: 3.01, P: 1, S: 10000 };
+  const paths = [];
+
+  // Forward move (must be empty)
+  const oneStep = [x, y + direction];
+  if (onBoard(oneStep) && !isObstacle(oneStep) && !targets.has(`${oneStep[0]},${oneStep[1]}`)) {
+    if (oneStep[1] === promotionRank) {
+      for (let promo of ['Q', 'R', 'N', 'B', 'P']) {
+        const score = pieceValues[promo];
+        paths.push({ path: [[x, y], oneStep], promotion: promo, score });
+      }
+    } else {
+      paths.push({ path: [[x, y], oneStep], score: 0 });
+    }
+
+    // Two-step move from starting rank
+    const twoStep = [x, y + 2 * direction];
+    if (y === startRank && onBoard(twoStep) && !isObstacle(twoStep) && !targets.has(`${twoStep[0]},${twoStep[1]}`)) {
+      paths.push({ path: [[x, y], twoStep], score: 0 });
+    }
+  }
+
+  // Captures
+  for (let dx of [-1, 1]) {
+    const diag = [x + dx, y + direction];
+    if (onBoard(diag)) {
+      const targetScore = getScore(diag);
+      if (targetScore > 0) {
+        if (diag[1] === promotionRank) {
+          for (let promo of ['Q', 'R', 'N', 'B', 'P']) {
+            const score = pieceValues[promo] + targetScore;
+            paths.push({ path: [[x, y], diag], promotion: promo, score });
+          }
+        } else {
+          paths.push({ path: [[x, y], diag], score: targetScore });
+        }
+      }
+    }
+  }
+
+  // En passant
+  if (/^[a-h][36]$/.test(enPassant)) {
+    const epFile = enPassant.charCodeAt(0) - 96;
+    const epRank = parseInt(enPassant[1]);
+    if (Math.abs(epFile - x) === 1 && epRank === y + direction) {
+      paths.push({ path:[[x, y], [epFile, epRank]], type: 'enPassant', score: 1 });
+    }
+  }
+
+  paths.sort((a, b) => b.score - a.score || a.path.length - b.path.length);
+  return paths;
+}
+
+
+ </script>
+
+
+
+///skt.js
+<script> 
+/* -------------------------------------------------------------
+   skt.js  –  SKT path generator with the exact deduplication
+   you asked for (clockwise loops kept, anticlockwise dropped,
+   abab → ab, etc.)
+   ------------------------------------------------------------- */
+function SktScoreObstacles(x, y) {
+  const dirs = [
+    [-1, -1], [-1, 0], [-1, 1],
+    [0, -1],           [0, 1],
+    [1, -1],  [1, 0],  [1, 1]
+  ];
+
+  const onBoard = ([a, b]) => a >= 1 && a <= 8 && b >= 1 && b <= 8;
+  const isFriendly = ([a, b]) => obstacles.includes(`${a},${b}`);
+  const getScore   = ([a, b]) => targets.get(`${a},${b}`) || 0;
+
+  const startKey = `${x},${y}`;
+  const allPaths = [];
+
+  // ---------- 1. Generate every legal 1-3-move path ----------
+  for (const d1 of dirs) {
+    const p1 = [x + d1[0], y + d1[1]];
+    if (!onBoard(p1) || isFriendly(p1)) continue;
+
+    allPaths.push({ path: [[x, y], p1], score: calcScore([[x, y], p1]) });
+
+    for (const d2 of dirs) {
+      const p2 = [p1[0] + d2[0], p1[1] + d2[1]];
+      if (!onBoard(p2) || isFriendly(p2)) continue;
+
+      allPaths.push({ path: [[x, y], p1, p2], score: calcScore([[x, y], p1, p2]) });
+
+      for (const d3 of dirs) {
+        const p3 = [p2[0] + d3[0], p2[1] + d3[1]];
+        if (!onBoard(p3) || isFriendly(p3)) continue;
+
+        allPaths.push({ path: [[x, y], p1, p2, p3], score: calcScore([[x, y], p1, p2, p3]) });
+      }
+    }
+  }
+
+  // ---------- 2. Helper: score (unique captures) ----------
+  function calcScore(path) {
+    const seen = new Set();
+    let s = 0;
+    for (const pos of path) {
+      const k = `${pos[0]},${pos[1]}`;
+      if (!seen.has(k)) { seen.add(k); s += getScore(pos); }
+    }
+    return s;
+  }
+
+  // ---------- 3. Helper: clockwise test ----------
+  // For a 4-step loop a→b→c→a we look at the three vectors.
+  // If the cross-product chain is positive → clockwise.
+  function isClockwiseLoop(path) {
+    if (path.length !== 4) return false;
+    const [a, b, c, d] = path;
+    if (`${d[0]},${d[1]}` !== startKey) return false; // must end at start
+
+    const v1 = [b[0] - a[0], b[1] - a[1]];
+    const v2 = [c[0] - b[0], c[1] - b[1]];
+    const v3 = [d[0] - c[0], d[1] - c[1]];
+
+    // cross products v1×v2 and v2×v3
+    const cross1 = v1[0] * v2[1] - v1[1] * v2[0];
+    const cross2 = v2[0] * v3[1] - v2[1] * v3[0];
+    return cross1 > 0 && cross2 > 0;
+  }
+
+  // ---------- 4. Deduplication ----------
+  const keep = new Map(); // key → best path object
+
+  for (const item of allPaths) {
+    const path = item.path;
+    const endKey = `${path[path.length - 1][0]},${path[path.length - 1][1]}`;
+
+    // 4-a)  abab  → keep only ab
+    if (path.length === 4 && endKey === `${path[1][0]},${path[1][1]}`) {
+      // this is a→b→a→b  → ignore, the 2-step a→b will be kept later
+      continue;
+    }
+
+    // 4-b)  Clockwise 4-step loop (abca) – keep it
+    if (path.length === 4 && endKey === startKey && isClockwiseLoop(path)) {
+      const sig = `loop_cw_${path.map(p => `${p[0]},${p[1]}`).join('|')}`;
+      keep.set(sig, item);
+      continue;
+    }
+
+    // 4-c)  Anything that returns to start **without** being a clockwise loop → drop
+    if (endKey === startKey) continue;
+
+    // 4-d)  Normal paths – group by *captured squares* (ignore order)
+    const captured = new Set();
+    for (let i = 1; i < path.length; i++) captured.add(`${path[i][0]},${path[i][1]}`);
+    const captureKey = Array.from(captured).sort().join('|');
+
+    const existing = keyExists(captureKey);
+    if (!existing) {
+      keep.set(captureKey, item);
+      continue;
+    }
+
+    // same captures → keep the **shortest** (or highest score if lengths equal)
+    if (item.score > existing.score ||
+        (item.score === existing.score && path.length < existing.path.length)) {
+      keep.set(captureKey, item);
+    }
+  }
+
+  // Helper for the map lookup
+  function keyExists(k) {
+    return keep.has(k) ? keep.get(k) : null;
+  }
+
+  // ---------- 5. Final sort ----------
+  const result = Array.from(keep.values());
+  result.sort((a, b) => b.score - a.score || a.path.length - b.path.length);
+  return result;
+}
+
+ </script>
+
+///applyMove.js
+<script> 
+///applyMove.js
+function applyBestMove() {
+  const moveText = document.getElementById("bestMoveDisplay").innerText.trim();
+  if (!moveText || !moveText.includes("(")) {
+    alert("No valid best move found.");
+    return;
+  }
+
+  // Parse move path like (5,8) → (6,7) → (7,7)
+  const regex = /\((\d),(\d)\)/g;
+  const path = [];
+  let match;
+  while ((match = regex.exec(moveText)) !== null) {
+    path.push([parseInt(match[1], 10), parseInt(match[2], 10)]);
+  }
+
+  if (path.length < 2) {
+    alert("Move path too short to apply.");
+    return;
+  }
+
+  const board = document.getElementById("board");
+  const getCell = (x, y) => board.rows[8 - y].cells[x - 1];
+
+  // Get the piece from the first square in the path
+  const [fromX, fromY] = path[0];
+  const sourceCell = getCell(fromX, fromY);
+  const piece = sourceCell.innerText.trim();
+
+  if (!piece) {
+    alert("No piece found at source square.");
+    return;
+  }
+
+  // Clear the source square
+  sourceCell.innerText = "";
+
+  // Clear intermediate squares along the path (captures)
+  for (let i = 1; i < path.length - 1; i++) {
+    const [x, y] = path[i];
+    const cell = getCell(x, y);
+    if (cell.innerText.trim() !== "") {
+      cell.innerText = ""; // remove captured piece
+    }
+  }
+
+  // Final destination
+  const [toX, toY] = path[path.length - 1];
+  let finalPiece = piece;
+
+  // --- Pawn Promotion Logic inferred from score ---
+  if (piece.toLowerCase() === "p" && (toY === 8 || toY === 1)) {
+    const scoreMatch = moveText.match(/Score:\s*([\d.]+)/);
+    const score = scoreMatch ? parseFloat(scoreMatch[1]) : null;
+    const isWhitePawn = piece === "P";
+
+    if (score !== null) {
+      const promoPiece = mapPromoFromScore(score);
+      finalPiece = isWhitePawn ? promoPiece.toUpperCase() : promoPiece.toLowerCase();
+    } else {
+      // Fallback: default to queen
+      finalPiece = isWhitePawn ? "Q" : "q";
+    }
+  }
+
+  // Place the piece at the final destination
+  getCell(toX, toY).innerText = finalPiece;
+
+  // Update FEN turn
+  const fenInput = document.getElementById("fenInput").value.trim();
+  const fenParts = fenInput.split(" ");
+  if (fenParts.length < 6) {
+    alert("Invalid FEN format.");
+    return;
+  }
+
+  const currentTurn = fenParts[1];
+  const nextTurn = currentTurn === "w" ? "b" : "w";
+  fenParts[1] = nextTurn;
+
+  const newFEN = generateFENFromBoard() + " " + fenParts.slice(1).join(" ");
+  document.getElementById("finalFENOutput").value = newFEN;
+}
+
+// Map a move score to a promotion piece, handling SKT base and normal capture sums
+function mapPromoFromScore(score) {
+  const SKT_BASE = 10000;
+
+  // Promotion values (note bishop = 3.01)
+  const promoMap = [
+    { val: 9,   piece: "Q" },
+    { val: 3.5, piece: "R" },
+    { val: 3.01,piece: "B" },
+    { val: 3,   piece: "N" },
+    { val: 1,   piece: "P" },
+  ];
+
+  // Capture values (normal pieces)
+  const captureVals = [9, 3.5, 3, 1];
+
+  // If SKT captured, remove base and match exactly
+  if (score >= SKT_BASE) {
+    const val = +(score - SKT_BASE).toFixed(2);
+    for (const { val: pv, piece } of promoMap) {
+      if (pv === val) return piece;
+    }
+    return "Q"; // fallback
+  }
+
+  // Otherwise: score may be promoValue + capturedPieceValue
+  for (const { val: pv, piece } of promoMap) {
+    const remaining = +(score - pv).toFixed(2);
+    if (captureVals.includes(remaining)) return piece;
+  }
+
+  // If no exact match, fallback to queen
+  return "Q";
+}
+
+function generateFENFromBoard() {
+  const board = document.getElementById("board");
+  let fen = "";
+
+  for (let row = 0; row < 8; row++) {
+    let empty = 0;
+    for (let col = 0; col < 8; col++) {
+      const cell = board.rows[row].cells[col];
+      const piece = cell.innerText.trim();
+      if (!piece) {
+        empty++;
+      } else {
+        if (empty > 0) {
+          fen += empty;
+          empty = 0;
+        }
+        fen += piece;
+      }
+    }
+    if (empty > 0) fen += empty;
+    if (row < 7) fen += "/";
+  }
+
+  return fen;
+}
+
+
+ </script>
+
+
+
+///transfer.js
+<script> 
+/// transfer.js
+function transferFinalFEN() {
+  const finalFen = document.getElementById("finalFENOutput").value.trim();
+  const fenInput = document.getElementById("fenInput");
+  const moveLogs = document.getElementById("moveLogs");
+  const bestMove = document.getElementById("bestMoveDisplay").innerText.trim();
+
+  if (!finalFen) {
+    alert("No Final FEN available to transfer.");
+    return;
+  }
+
+  // Copy Final FEN into FEN Input field
+  fenInput.value = finalFen;
+
+  // Append move + FEN into game log
+  const logEntry = `Transferred Move: ${bestMove || "(unknown move)"}\nFEN: ${finalFen}\n\n`;
+  moveLogs.value += logEntry;
+
+  // Optional: scroll to bottom of logs
+  moveLogs.scrollTop = moveLogs.scrollHeight;
+}
+
+
+ </script>
+
+
+
+///copyMoveLogs.js
+<script> 
+/// copyMoveLogs.js
+
+/**
+ * Selects and copies the content of the moveLogs textarea.
+ * Provides visual feedback on the button upon successful copy.
+ */
+function copyMoveLogs(event) {
+  const logs = document.getElementById('moveLogs');
+  if (!logs) return;
+
+  // Get the element that triggered the function (likely a button)
+  const triggerBtn = event ? event.target : null;
+
+  // ---------- 1. SELECT ALL CONTENTS (FOR VISUAL FEEDBACK / MANUAL COPY) ----------
+  // For <textarea> or <input>
+  if (logs.tagName === 'TEXTAREA' || logs.tagName === 'INPUT') {
+    logs.focus();
+    logs.select();
+    logs.setSelectionRange(0, 99999); // mobile
+  }
+  // For <div>, <pre>, etc. – use Range selection
+  else {
+    const range = document.createRange();
+    range.selectNodeContents(logs);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  // ---------- 2. GET TEXT ONLY (what we actually copy) ----------
+  const textToCopy = logs.value || logs.textContent || logs.innerText || '';
+
+  // ---------- 3. COPY (modern + fallback) ----------
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    // Modern Approach: Copy the text variable directly
+    navigator.clipboard.writeText(textToCopy)
+      .then(() => showCopiedFeedback(triggerBtn))
+      .catch(() => fallbackCopy(textToCopy, triggerBtn));
+  } else {
+    // Fallback if modern API isn't available
+    fallbackCopy(textToCopy, triggerBtn);
+  }
+}
+
+// --- Fallback: execCommand (Deprecated but useful for older browsers) ---
+function fallbackCopy(text, triggerBtn) {
+  let temp;
+  try {
+    // Create temporary textarea to copy clean text
+    temp = document.createElement('textarea');
+    temp.value = text;
+    // Style to hide it off-screen
+    temp.style.position = 'fixed';
+    temp.style.top = '0';
+    temp.style.left = '-9999px';
+    document.body.appendChild(temp);
+    
+    // Select the content of the temporary element
+    temp.focus();
+    temp.select();
+    temp.setSelectionRange(0, 99999); // Mobile compatibility
+
+    const success = document.execCommand('copy');
+    
+    if (success) {
+      showCopiedFeedback(triggerBtn);
+    } else {
+      alert('Copy failed – please select and copy manually.');
+    }
+  } catch (err) {
+    alert('Copy failed – your browser may block it.');
+  } finally {
+    // Clean up the temporary element
+    if (temp) {
+      document.body.removeChild(temp);
+    }
+  }
+}
+
+// ---------- Visual feedback (Pass the button element) ----------
+function showCopiedFeedback(btn) {
+  if (!btn) return;
+  const oldText = btn.innerText;
+  const oldBg = btn.style.backgroundColor;
+  const oldColor = btn.style.color;
+
+  btn.innerText = 'Copied!';
+  btn.style.backgroundColor = '#4CAF50';
+  btn.style.color = 'white';
+  
+  setTimeout(() => {
+    btn.innerText = oldText;
+    btn.style.backgroundColor = oldBg;
+    btn.style.color = oldColor;
+  }, 1500);
+}
+
+ </script>
+
+
+///autoPlayCycles.js
+<script> 
+
+///autoPlayCycles.js
+/**
+ * Automates the game cycle: load FEN, find best move, apply best move,
+ * update FEN, and log the results for a specified number of cycles.
+ * @param {number} cycles - The number of turns/moves to play automatically.
+ */
+async function autoPlayCycles(cycles = 50) {
+  const moveLogs = document.getElementById("moveLogs");
+  moveLogs.value = "";
+
+  for (let i = 1; i <= cycles; i++) {
+    loadFEN();
+    await new Promise(resolve => setTimeout(resolve, 300));
+    bestMove();
+    await new Promise(resolve => setTimeout(resolve, 300));
+    applyBestMove();
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    const move = document.getElementById("bestMoveDisplay").innerText.trim() ||
+                 document.getElementById("captureMoveOutput").value.trim();
+    const newFen = document.getElementById("finalFENOutput").value.trim();
+    document.getElementById("fenInput").value = newFen;
+
+    moveLogs.value += `${i}. Move: ${move}\n    FEN: ${newFen}\n\n`;
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+}
+
+ </script>
+
+
+///bestMoveTwoPlies.js
+<script> 
+///bestMoveTwoPlies.js
+/**
+ * Performs a two-ply (two-move lookahead) search based on existing path data 
+ * in the 'output' field to determine the best move.
+ */
+async function bestMoveTwoPlies() {
+  loadFEN();
+  await new Promise(r => setTimeout(r, 100));
+
+  const output = document.getElementById("output").value;
+  const pathLines = output.trim().split('\n')
+    .filter(l => l.includes('→') && l.includes('Score:'));
+
+  if (pathLines.length === 0) {
+    document.getElementById("bestMoveDisplay").innerText = "No moves found.";
+    return;
+  }
+
+  const originalFen = document.getElementById("fenInput").value.trim();
+  let bestNetScore = -Infinity;
+  let bestMoves = [];
+
+  for (let line of pathLines) {
+    const moveText = line.split(' | ')[0];
+    const myScore = parseFloat(line.match(/Score:\s*([\d.]+)/)[1]);
+
+    // Simulate my move
+    document.getElementById("bestMoveDisplay").innerText = moveText;
+    applyBestMove();
+    await new Promise(r => setTimeout(r, 50));
+
+    const afterMyMoveFen = document.getElementById("finalFENOutput").value.split(' ')[0];
+    const opponentTurn = currentTurn === 'w' ? 'b' : 'w';
+    document.getElementById("fenInput").value = afterMyMoveFen + " " + opponentTurn;
+
+    loadFEN();
+    await new Promise(r => setTimeout(r, 100));
+
+    const oppOutput = document.getElementById("output").value;
+    const oppLines = oppOutput.trim().split('\n')
+      .filter(l => l.includes('→') && l.includes('Score:'));
+    const oppBestScore = oppLines.length > 0
+      ? Math.max(...oppLines.map(l => parseFloat(l.match(/Score:\s*([\d.]+)/)[1]) || 0))
+      : 0;
+
+    // Restore board
+    document.getElementById("fenInput").value = originalFen;
+    loadFEN();
+
+    const SKT_LOSS = 10000;
+    const penalty = oppBestScore >= SKT_LOSS - 1 ? -1e9 : 0;
+    const netScore = myScore - oppBestScore + penalty;
+
+    if (netScore > bestNetScore) {
+      bestNetScore = netScore;
+      bestMoves = [moveText];
+    } else if (Math.abs(netScore - bestNetScore) < 0.01) {
+      bestMoves.push(moveText);
+    }
+  }
+
+  const chosenMove = bestMoves[Math.floor(Math.random() * bestMoves.length)];
+  document.getElementById("bestMoveDisplay").innerText = chosenMove;
+}
+ </script>
+
+///aiVsAiFifty.js
+<script> 
+/// aiVsAiFifty.js  (your original, improved with smart wait)
+
+async function aiVsAiFifty(cycles = 50) {
+  const moveLogs = document.getElementById("moveLogs");
+  moveLogs.value = ""; 
+
+  for (let i = 1; i <= cycles; i++) {
+    // 1. Ensure current FEN is loaded
+    loadFEN(); 
+    await new Promise(resolve => setTimeout(resolve, 3000)); // UI render
+
+    // 2. Generate best 2-ply move
+    await bestMoveTwoPlies(); 
+    
+    // SMART WAIT: Wait for bestMoveDisplay to update — max 3 minutes
+    const startTime = Date.now();
+    const maxWait = 3 * 60 * 1000; // 3 minutes
+    let lastMove = "";
+
+    while (true) {
+      const currentMove = document.getElementById("bestMoveDisplay").innerText.trim();
+      if (currentMove && currentMove !== lastMove && currentMove !== "Calculating...") {
+        break; // Move is ready!
+      }
+      if (Date.now() - startTime > maxWait) {
+        console.warn(`Cycle ${i}: bestMoveTwoPlies took >3 min, proceeding anyway...`);
+        break;
+      }
+      await new Promise(resolve => setTimeout(resolve, 500)); // check every 0.5s
+      lastMove = currentMove;
+    }
+
+    // 3. Apply the move
+    applyBestMove();
+    
+    // 4. Transfer FEN
+    transferFinalFEN(); 
+    
+    // 5. Log
+    const move = document.getElementById("bestMoveDisplay").innerText.trim();
+    const newFen = document.getElementById("finalFENOutput").value.trim();
+    moveLogs.value += `${i}. Move: ${move}\n    FEN: ${newFen}\n\n`;
+    
+    // Short pause for visibility
+    await new Promise(resolve => setTimeout(resolve, 5000)); 
+  }
+}
+ </script>
+
+<script> 
+///showfen.js
+/**
+ * Generates the FULL FEN string and updates BOTH the top display 
+ * AND the bottom AI's primary FEN input (id="fenInput").
+ * Also triggers the AI pipeline for one move automatically.
+ */
+function top_showPosition(nextMoveColor) { 
+  // 1. Calculate FEN Ranks 
+  let fenRanks = board.map(row => {
+    let line = '';
+    let empty = 0;
+    for (let cell of row) {
+      if (cell === '') {
+        empty++;
+      } else {
+        if (empty > 0) {
+          line += empty;
+          empty = 0;
+        }
+        line += top_pieceToFEN(cell);
+      }
+    }
+    if (empty > 0) line += empty;
+    return line;
+  }).join('/');
+  
+  // 2. Construct the full FEN string using the provided color and fixed defaults
+  const color = (nextMoveColor === 'b' ? 'b' : 'w');
+  const fullFEN = `${fenRanks} ${color} - - 0 1`;
+  
+  // 3. Update the top board's display
+  document.getElementById("position").textContent = "Board Position:\n" + fullFEN;
+  
+  // 4. TRANSFER COMPLETE FEN TO AI's PRIMARY INPUT (id="fenInput")
+  const bottomFenInput = document.getElementById("fenInput");
+  if (bottomFenInput && bottomFenInput.tagName === 'TEXTAREA') {
+    bottomFenInput.value = fullFEN;
+  }
+  
+  // 5. Trigger AI one‑move pipeline automatically
+  aiOneMove(fullFEN);
+
+  return fullFEN;
+}
+
+// Guard flag
+let aiPipelineRunning = false;
+
+// AI makes one 2‑ply move, then stops
+async function aiOneMove(fen) {
+  if (!fen) {
+    alert("No FEN generated!");
+    return;
+  }
+  if (aiPipelineRunning) return;
+  aiPipelineRunning = true;
+
+  const moveLogs = document.getElementById("moveLogs");
+  if (moveLogs) moveLogs.value = "";
+
+  try {
+    // 1. Load the FEN
+    loadFEN();
+    await wait(3000);
+
+    // 2. Best 2‑ply move
+    await bestMoveTwoPlies();
+
+    // 3. Wait for bestMoveDisplay
+    await waitForElement('#bestMoveDisplay', 180000);
+
+    // 4. Apply move
+    applyBestMove();
+    await wait(500);
+
+    // 5. Transfer final FEN
+    transferFinalFEN();
+    await wait(200);
+
+    // 6. Log and update human board
+    const move = document.getElementById("bestMoveDisplay").innerText.trim();
+    const newFen = document.getElementById("finalFENOutput").value.trim();
+    if (moveLogs) moveLogs.value += `AI Move: ${move}\nFEN: ${newFen}\n\n`;
+
+    const humanInput = document.getElementById('topFenInput');
+    humanInput.value = newFen;
+    top_loadPosition(); // redraw top board
+  } catch (e) {
+    alert('AI pipeline error: ' + e.message);
+  } finally {
+    aiPipelineRunning = false;
+  }
+}
+
+/* ---------- tiny helpers ---------- */
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function waitForElement(selector, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    const check = () => {
+      const el = document.querySelector(selector);
+      if (el && el.textContent.trim()) return resolve();
+      if (Date.now() - start > timeoutMs) return reject(new Error('timeout'));
+      requestAnimationFrame(check);
+    };
+    check();
+  });
+}
+
+
+
+
+ </script>
+
+///main.js
+<script> 
+
+///main.js
+let targets = new Map();
+let obstacles = [];
+let friendlies = [];
+let startPos = null;
+let currentTurn = 'w';
+
+function loadFEN() {
+  const fen = document.getElementById("fenInput").value.trim();
+  if (fen.length === 0) {
+    alert("Please enter a valid FEN string.");
+    return;
+  }
+  parseFEN(fen);
+}
+
+function parseFEN(fen) {
+  targets.clear();
+  obstacles = [];
+  friendlies = [];
+  startPos = null;
+
+  const pieceScores = { 'Q': 9, 'R': 3.5, 'N': 3, 'B': 3, 'P': 1, 'S': 10000 };
+  const rows = fen.split(' ')[0].split('/');
+  const turn = fen.split(' ')[1];
+  currentTurn = turn;
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+
+  for (let y = 0; y < 8; y++) {
+    // FIX: Use insertRow() on the table element
+    const row = board.insertRow(); 
+    let x = 0;
+    for (let char of rows[y]) {
+      if (/\d/.test(char)) {
+        for (let i = 0; i < parseInt(char); i++) {
+          const cell = row.insertCell();
+          cell.className = (x + y) % 2 === 0 ? "white" : "black";
+          x++;
+        }
+      } else {
+        const pos = `${x + 1},${8 - y}`;
+        const cell = row.insertCell();
+        const isBlackSquare = (x + y) % 2 !== 0;
+        cell.className = isBlackSquare ? "black" : "white";
+        cell.textContent = char;
+
+        const isWhitePiece = /[A-Z]/.test(char);
+        const isBlackPiece = /[a-z]/.test(char);
+        const pieceType = char.toUpperCase();
+
+        if ((turn === 'b' && isWhitePiece) || (turn === 'w' && isBlackPiece)) {
+          const score = pieceScores[pieceType] || 0;
+          targets.set(pos, score);
+          cell.classList.add("target");
+          cell.title = `Target ${pos} → ${score}`;
+        } else if ((turn === 'b' && isBlackPiece) || (turn === 'w' && isWhitePiece)) {
+          friendlies.push({ pos, piece: pieceType });
+          obstacles.push(pos);
+          cell.classList.add("friendly");
+          cell.title = `Friendly ${pieceType} at ${pos}`;
+          if (pieceType === 'S') startPos = pos;
+        }
+
+        if ((turn === 'b' && char === 'S') || (turn === 'w' && char === 's')) {
+          targets.set(pos, pieceScores['S']);
+          cell.classList.add("target");
+          cell.title = `🎯 Main Target SKT at ${pos} → ${pieceScores['S']}`;
+        }
+
+        x++;
+      }
+    }
+  }
+
+  const lines = [];
+  for (let [pos, score] of targets.entries()) {
+    lines.push(`🎯 Target (${pos}) → ${score}`);
+  }
+  for (let { pos } of friendlies) {
+    lines.push(`🤝 Friendly (${pos})`);
+  }
+  for (let pos of obstacles) {
+    lines.push(`⛔ Obstacle (${pos})`);
+  }
+  document.getElementById("targets").textContent = lines.join("\n");
+
+  const output = document.getElementById("output");
+  output.value = "";
+
+  if (startPos) {
+    const [sx, sy] = startPos.split(',').map(Number);
+    // FIX: This call is commented out to prevent duplicate SKT path generation.
+    // generatePaths(sx, sy, 'S'); 
+  }
+
+  // This loop now correctly handles ALL friendly pieces, including 'S', exactly once.
+  for (let { pos, piece } of friendlies) {
+    const [x, y] = pos.split(',').map(Number);
+    generatePaths(x, y, piece);
+  }
+}
+
+function linearPaths(x, y, directions) {
+  const onBoard = ([a, b]) => a >= 1 && a <= 8 && b >= 1 && b <= 8;
+  const isObstacle = ([a, b]) => obstacles.includes(`${a},${b}`);
+  const getScore = ([a, b]) => targets.get(`${a},${b}`) || 0;
+
+  const paths = [];
+
+  function calculateScore(path) {
+    const visited = new Set();
+    let score = 0;
+    for (let pos of path) {
+      const key = `${pos[0]},${pos[1]}`;
+      if (!visited.has(key)) {
+        visited.add(key);
+        score += getScore(pos);
+      }
+    }
+    return score;
+  }
+
+  for (let [dx, dy] of directions) {
+    let path = [[x, y]];
+    let cx = x + dx, cy = y + dy;
+    while (onBoard([cx, cy]) && !isObstacle([cx, cy])) {
+      path.push([cx, cy]);
+      paths.push({ path: [...path], score: calculateScore(path) });
+      if (targets.has(`${cx},${cy}`)) break;
+      cx += dx;
+      cy += dy;
+    }
+  }
+
+  paths.sort((a, b) => b.score - a.score || a.path.length - b.path.length);
+  return paths;
+}
+
+function generatePaths(x, y, piece) {
+  const output = document.getElementById("output");
+  output.value += `\nPaths for ${piece} at (${x},${y}):\n`;
+
+  const isWhite = currentTurn === 'w';
+  let paths = [];
+
+  switch (piece) {
+    case 'S': 
+      paths = SktScoreObstacles(x, y);
+      break;
+    case 'R':
+      paths = rookPaths(x, y);
+      break;
+    case 'B':
+      paths = bishopPaths(x, y);
+      break;
+    case 'Q':
+      paths = queenPaths(x, y);
+      break;
+    case 'N':
+      paths = knightPaths(x, y);
+      break;
+    case 'P':
+      paths = pawnPaths(x, y, isWhite);
+      break;
+    default:
+      return;
+  }
+
+  if (paths.length === 0) {
+    output.value += "No valid paths found.\n";
+    return;
+  }
+
+  for (let item of paths) {
+    const pathStr = item.path.map(p => `(${p[0]},${p[1]})`).join(" → ");
+    output.value += `${pathStr} | Score: ${item.score}\n`;
+  }
+}
+ </script>
+
+</body>
+</html>
