@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Super King Trinity – In Honour of the Holy Trinity</title>
+
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      line-height: 1.4;
+    }
+
+    .button-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 16px 24px;
+      background: #2d6cdf;
+      color: #fff;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 1.2em;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .button-link:hover {
+      background: #244fa6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>
+    Super King Trinity<br>
+    In honour of God the Father, God the Son, and God the Holy Spirit
+  </h1>
+
+  <p>
+    <span id="entryButton" class="button-link">Jesus Christ is Lord</span>
+  </p>
+
+  <script>
+    let clickTimer = null;
+    const btn = document.getElementById("entryButton");
+
+    // SINGLE CLICK → open original file
+    btn.addEventListener("click", function () {
+      if (clickTimer !== null) return;
+
+      clickTimer = setTimeout(() => {
+        window.location.href = "SuperKingTrinity.html";
+        clickTimer = null;
+      }, 250);
+    });
+
+    // DOUBLE CLICK → open alternate file
+    btn.addEventListener("dblclick", function () {
+      clearTimeout(clickTimer);
+      clickTimer = null;
+
+      window.location.href = "Super King Trinity.html";
+    });
+  </script>
+
+</body>
+</html>
+
+

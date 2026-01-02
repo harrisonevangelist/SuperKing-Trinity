@@ -1,0 +1,1676 @@
+ 
+ <!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title> Super King Trinity</title>
+
+    <style>
+        :root { --cell-size: 55px; --bg-color: #0a0a0a; --board-color: #d2b48c; --highlight: #00ff00; --accent: #0088ff; }
+
+        body { background: var(--bg-color); color: #eee; font-family: "Microsoft YaHei", 'Consolas', monospace; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
+ 
+        h1 { margin: 10px; text-shadow: 0 0 10px var(--highlight); font-size: 24px; color: var(--highlight); }
+        #status { font-weight: bold; color: var(--highlight); margin-bottom: 10px; }
+
+        /* Board Styles */
+        .board { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(10, var(--cell-size)); background: var(--board-color); border: 4px solid #5d4037; position: relative; }
+
+        .cell { width: var(--cell-size); height: var(--cell-size); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; border: 0.5px solid rgba(0,0,0,0.05); }
+
+        .river { background: #c1a17b; }
+
+
+/* marker for red SuperKingTrinity S */
+.red.superking {
+    background-image: url("data:image/webp;base64,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");
+    background-size: 90% 90%;
+    background-position: 60% 50%;
+    color: transparent;
+}
+
+/* marker for black SuperKingTrinity s */
+.black.superking {
+    background-image: url("data:image/webp;base64,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");
+    background-size: 90% 90%;
+    background-position: 60% 50%;
+    color: transparent;
+}
+
+
+
+
+        .piece { width: 48px; height: 48px; border-radius: 50%; background: #fdf5e6; border: 2px solid #333; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; user-select: none; z-index: 5; box-shadow: 2px 2px 4px rgba(0,0,0,0.4); }
+
+        .red { color: #b30000; border-color: #b30000; }
+
+        .black { color: #111; border-color: #111; }
+
+        .selected { background: rgba(0, 170, 255, 0.4) !important; }
+
+        .trinity-path { background: rgba(0, 255, 0, 0.4) !important; }
+
+        /* Controls */
+        .controls { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 600px; }
+
+        button { padding: 10px 15px; cursor: pointer; background: #111; color: var(--highlight); border: 1px solid var(--highlight); border-radius: 4px; font-weight: bold; transition: 0.2s; }
+
+        button:hover { background: var(--highlight); color: #000; }
+
+        .btn-stop { border-color: #ff4444; color: #ff4444; }
+
+        .btn-trinity { background: #1b4d1b; color: white; display: none; }
+/* marker16 */
+        .btn-red-ai { background: #300 !important; border-color: #f00 !important; color: #fff !important; }
+/* marker17 */
+        .btn-black-ai { background: #000 !important; border-color: #fff !important; color: #fff !important; }
+
+        /* Verse & Engine Panel */
+        #verseDisplay { margin: 20px auto 10px auto; padding: 15px; border: 1px solid #333; border-radius: 8px; max-width: 500px; text-align: center; color: #ccc; min-height: 50px; line-height: 1.5; }
+/* marker18 */        
+        .fen-container { background: #111; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; width: 100%; max-width: 700px; box-sizing: border-box; }
+
+
+/* marker19 */
+        #fenInput { width: 100%; background: #000; color: #fff; border: 1px solid var(--accent); padding: 10px; font-family: monospace; margin-bottom: 10px; border-radius: 4px; }
+
+<input type="text" id="fenInput" onclick="this.select()" value="...">
+
+/* marker20 */        
+        /* Terminal */
+        .terminal { width: 100%; max-width: 700px; background: #000; border: 1px solid #333; margin-top: 20px; font-size: 14px; }
+/* marker21 */
+        .t-head { background: #222; padding: 8px 15px; display: flex; justify-content: space-between; color: #aaa; font-size: 12px; }
+
+/* marker22 */
+        #moveList { height: 200px; overflow-y: auto; padding: 15px; color: var(--highlight); white-space: pre-wrap; line-height: 1.4; user-select: all; /* This allows you to select everything with one click */ cursor: text;}
+
+
+/* marker23 */
+    </style>
+</head>
+<body>
+
+<h1>SUPERKING TRINITY</h1>
+
+<div id="status">Ready</div>
+
+<div class="board" id="board"></div>
+
+<div class="controls">
+
+    <button id="finishTrinity" class="btn-trinity" onclick="executeTrinityMove()">Finish SuperKing Trinity move</button>
+
+    <button onclick="resetGame()">重置 (Reset)</button>
+
+    <button onclick="flipBoard()">翻转 (Flip)</button>
+
+    <button class="btn-stop" onclick="window.location.reload()">停止 (STOP)</button>
+</div>
+
+<div class="controls">
+
+    <button class="btn-red-ai" onclick="autoTriggerAI('r')">AI 红方 (Red)</button>
+
+    <button class="btn-black-ai" onclick="autoTriggerAI('b')">AI 黑方 (Black)</button>
+</div>
+
+
+<div id="verseDisplay"> 约翰福音 3:16 “因为上帝爱世人，甚至将祂独一的儿子赐给他们，叫一切信祂的人不致灭亡，反得永生。</div>
+
+<div class="fen-container">
+    <label style="font-size: 12px; color: var(--accent);">BOARD FEN / ENGINE TARGET:</label>
+    <input type="text" id="fenInput" 
+onclick="this.select()"
+value="rnbasabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBASABNR r 0 - 0 1">
+
+
+
+    <div class="controls">
+        <button onclick="loadFenFromInput()">加载位置 (Load)</button>
+
+
+
+
+<div style="width: 100%; margin: 20px 0;">
+    <label style="font-size: 13px; color: #00ff00; display: block; margin-bottom: 5px;">LIVE FEN (AFTER MOVE):</label>
+
+    <input type="text" id="liveFenRegister" onclick="this.select()" readonly 
+           style="width: 100%; background: #000; color: #0ff; border: 1px solid #333; padding: 10px; font-family: monospace; border-radius: 4px;" 
+           placeholder="Move a piece to see the result here...">
+</div>
+
+
+<button class="blue" style="border-color:var(--accent); color:var(--accent);" 
+/* marker34 */
+onclick="runTwoPly()">START FULL CALCULATION</button>
+
+
+<!-- ⭐ INSERT BEST CONTINUATION BUTTON HERE ⭐ -->
+<button onclick="showBestContinuation()" 
+        style="border-color:#0f0; color:#0f0;">
+    BEST CONTINUATION
+</button>
+
+
+<button onclick="showTop3FirstMovesOnly()" 
+        style="border-color:#ff0; color:#ff0;">
+    TOP 3 FIRST MOVES (FEN ONLY)
+</button>
+
+
+<button onclick="analyzeFirstMoveMinimax()" 
+        style="border-color:#f0f; color:#f0f;">
+    FIRST MOVE MINIMAX
+</button>
+
+
+<button onclick="exportMemory()" style="border-color:#888; color:#888;">DOWNLOAD (.TXT)</button>
+<button onclick="copyCurrentFen()">复制 FEN (Copy)</button>
+</div>
+</div>
+
+
+<div class="terminal">
+    <div class="t-head">
+        <span>ENGINE_LOG_V2.0</span>
+        <span id="counter">Memory: 0 variations</span>
+    </div>
+    <div id="moveList">Engine Standby...</div>
+</div>
+
+
+
+
+
+<script>
+/* evaluatefen.js inline */
+<!-- paste the full contents of evaluatefen.js here -->
+
+// evaluatefen.js
+// JavaScript port of evaluatefen.c
+// Exposes: EvaluateFen.evaluate(fen) -> { score, fen }
+
+// piece values
+const EF_VALUES = {
+    r: 9,   // chariot
+    n: 4,   // horse
+    c: 5,   // cannon
+    b: 2,   // elephant
+    a: 2,   // advisor
+    p: 1,   // pawn
+    s: 10000 // SKT
+};
+
+function ef_pieceValue(p) {
+    if (!p) return 0;
+    const key = p.toLowerCase();
+    return EF_VALUES[key] || 0;
+}
+
+function ef_evaluateFen(fen) {
+    if (!fen || typeof fen !== "string") {
+        throw new Error("Invalid FEN");
+    }
+
+    const tokens = fen.trim().split(/\s+/);
+
+    if (tokens.length < 6) {
+        throw new Error("FEN string is incomplete");
+    }
+
+    const boardPart = tokens[0];
+    const side = tokens[1];
+    const scoreField = tokens[2];
+    const sktStatus = tokens[3];
+    const halfmove = tokens[4];
+    const fullmove = tokens[5];
+
+    // === 1. READBACK CHECK ===
+    // If scoreField is numeric (or negative numeric), return it directly
+    if (scoreField !== "-" && !isNaN(parseInt(scoreField, 10))) {
+        const score = parseInt(scoreField, 10);
+        return {
+            score,
+            fen: `${boardPart} ${side} ${score} ${sktStatus} ${halfmove} ${fullmove}`
+        };
+    }
+
+    // === 2. MATERIAL EVALUATION ===
+    let materialScore = 0;
+
+    for (let i = 0; i < boardPart.length; i++) {
+        const ch = boardPart[i];
+        if (/[a-zA-Z]/.test(ch)) {
+            const val = ef_pieceValue(ch);
+            if (ch === ch.toUpperCase()) {
+                materialScore += val; // Red
+            } else {
+                materialScore -= val; // Black
+            }
+        }
+    }
+
+    const finalScore = materialScore;
+
+    // === 3. RETURN UPDATED FEN ===
+    const newFen = `${boardPart} ${side} ${finalScore} ${sktStatus} ${halfmove} ${fullmove}`;
+
+    return {
+        score: finalScore,
+        fen: newFen
+    };
+}
+
+// expose globally
+window.EvaluateFen = {
+    evaluate: ef_evaluateFen
+};
+
+
+</script>
+
+<script>
+/* moveapplier.js inline */
+<!-- paste the full contents of moveapplier.js here -->
+
+// moveapplier.js
+// JS version of moveapplier.c for SKT Xiangqi variant.
+// Exposes: window.MoveApplier.applyMove(fen, move) -> newFen
+//          window.MoveApplier.fenToMatrix(boardPart) -> 10x9 matrix
+
+(function () {
+    "use strict";
+
+    const RANKS = 10;
+    const FILES = 9;
+    const WIN_VALUE = 10000;
+
+    const CHARIOT_VALUE  = 9;
+    const HORSE_VALUE    = 4;
+    const CANNON_VALUE   = 5;
+    const ELEPHANT_VALUE = 2;
+    const ADVISOR_VALUE  = 2;
+    const PAWN_VALUE     = 1;
+
+    function inBounds(r, c) {
+        return r >= 0 && r < RANKS && c >= 0 && c < FILES;
+    }
+
+    function pieceValue(p) {
+        if (!p) return 0;
+        switch (p.toLowerCase()) {
+            case "r": return CHARIOT_VALUE;
+            case "n": return HORSE_VALUE;
+            case "c": return CANNON_VALUE;
+            case "b": return ELEPHANT_VALUE;
+            case "a": return ADVISOR_VALUE;
+            case "p": return PAWN_VALUE;
+            case "s": return WIN_VALUE;
+            default:  return 0;
+        }
+    }
+
+    // ===== FEN PARSING / SERIALIZATION =====
+
+    function parseFen(fen) {
+        const state = {
+            board: Array.from({ length: RANKS }, () => Array(FILES).fill(".")),
+            side: "r",
+            score: 0,
+            sktStatus: "-",
+            halfmove: "0",
+            fullmove: "1",
+            originalFen: fen
+        };
+
+        const tokens = fen.trim().split(/\s+/);
+        const boardPart = tokens[0] || "";
+        const side = tokens[1] || "r";
+        const scoreField = tokens[2] || "-";
+        const sktStatus = tokens[3] || "-";
+        const halfmove = tokens[4] || "0";
+        const fullmove = tokens[5] || "1";
+
+        // board
+        let r = 0, c = 0;
+        for (let i = 0; i < boardPart.length; i++) {
+            const ch = boardPart[i];
+            if (ch === "/") {
+                r++;
+                c = 0;
+                continue;
+            }
+            if (/\d/.test(ch)) {
+                c += parseInt(ch, 10);
+                continue;
+            }
+            if (c < FILES) {
+                state.board[r][c] = ch;
+                c++;
+            }
+        }
+
+        state.side = side[0] || "r";
+
+        // score: if "-", we don't call external engine; just treat as 0
+        if (scoreField !== "-" && scoreField !== undefined) {
+            const val = parseInt(scoreField, 10);
+            state.score = Number.isNaN(val) ? 0 : val;
+        } else {
+            state.score = 0; // JS version: no external evaluatefen, default 0
+        }
+
+        state.sktStatus = sktStatus;
+        state.halfmove = halfmove;
+        state.fullmove = fullmove;
+
+        return state;
+    }
+
+    function boardToFen(state) {
+        let boardStr = "";
+
+        for (let r = 0; r < RANKS; r++) {
+            let empty = 0;
+            for (let c = 0; c < FILES; c++) {
+                const ch = state.board[r][c];
+                if (ch === "." || ch === null) {
+                    empty++;
+                } else {
+                    if (empty > 0) {
+                        boardStr += String(empty);
+                        empty = 0;
+                    }
+                    boardStr += ch;
+                }
+            }
+            if (empty > 0) boardStr += String(empty);
+            if (r !== RANKS - 1) boardStr += "/";
+        }
+
+        const tail = ` ${state.side} ${state.score} ${state.sktStatus} ${state.halfmove} ${state.fullmove}`;
+        return boardStr + tail;
+    }
+
+    // ===== HELPERS =====
+
+    function fromAlg(alg) {
+        // e.g. "a10" -> { r:0, c:0 }, "i1" -> { r:9, c:8 }
+        const fileChar = alg[0];
+        const rankPart = alg.slice(1);
+        const c = fileChar.charCodeAt(0) - "a".charCodeAt(0);
+        const r = 10 - parseInt(rankPart, 10);
+        return { r, c };
+    }
+
+    function updateScoreAndStatus(state, pieceMoved, capturedPiece, capturingSide) {
+        if (!capturedPiece || capturedPiece === ".") return;
+
+        const val = pieceValue(capturedPiece);
+
+        // Red-centric: upper=Red, lower=Black
+        if (capturedPiece === capturedPiece.toUpperCase()) {
+            state.score -= val;
+        } else {
+            state.score += val;
+        }
+
+        // SKT status when SKT captured
+        if (capturedPiece.toLowerCase() === "s") {
+            const cur = state.sktStatus;
+            if (capturingSide === "r") {
+                if (cur === "-") state.sktStatus = "3";
+                else if (cur === "2") state.sktStatus = "23";
+                else if (cur === "3" || cur === "23" || cur === "32") state.sktStatus = "3";
+            } else {
+                if (cur === "-") state.sktStatus = "2";
+                else if (cur === "3") state.sktStatus = "32";
+                else if (cur === "2" || cur === "23" || cur === "32") state.sktStatus = "2";
+            }
+        }
+    }
+
+    // ===== CORE: APPLY MOVE =====
+    // MOVE format (same as C): leading piece letter, then coordinates.
+    //  - SKT: "Sg4-e4-e7" or "s a10,b10,b7" etc (we parse purely by alpha+digits groups)
+    //  - Normal: "Ra1-a4", "pa3a4", etc.
+
+    function applyMove(fen, move) {
+        const state = parseFen(fen);
+        const initialSide = state.side;
+        if (!move || move.length < 2) {
+            throw new Error("Invalid move format");
+        }
+
+        const pieceMovedChar = move[0];
+
+        // ---- SKT multi-square move ----
+        if (pieceMovedChar.toLowerCase() === "s") {
+            const coords = [];
+            let idx = 1;
+
+            while (idx < move.length) {
+                let alg = "";
+                // letters
+                while (idx < move.length && /[a-zA-Z]/.test(move[idx])) {
+                    alg += move[idx++];
+                }
+                // digits
+                while (idx < move.length && /[0-9]/.test(move[idx])) {
+                    alg += move[idx++];
+                }
+                if (!alg) break;
+                const { r, c } = fromAlg(alg);
+                coords.push({ r, c });
+                // optional delimiters
+                if (idx < move.length && (move[idx] === "-" || move[idx] === "x" || move[idx] === ",")) {
+                    idx++;
+                }
+            }
+
+            if (coords.length === 0) {
+                throw new Error("Invalid SKT move format");
+            }
+
+            // snapshot of board for capture reading
+            const tempBoard = state.board.map(row => row.slice());
+
+            const pieceToPlace = pieceMovedChar === pieceMovedChar.toUpperCase() ? "S" : "s";
+            let originR = -1, originC = -1;
+
+            // find SKT piece origin
+            outer: for (let r = 0; r < RANKS; r++) {
+                for (let c = 0; c < FILES; c++) {
+                    if (tempBoard[r][c] === pieceToPlace) {
+                        originR = r;
+                        originC = c;
+                        break outer;
+                    }
+                }
+            }
+
+            // process path: capture others, never SKT itself, clear path in new board
+            for (let i = 0; i < coords.length; i++) {
+                const { r, c } = coords[i];
+                if (!inBounds(r, c)) continue;
+
+                const captured = tempBoard[r][c];
+                if (captured !== "." && captured !== pieceToPlace) {
+                    updateScoreAndStatus(state, pieceMovedChar, captured, initialSide);
+                }
+
+                state.board[r][c] = ".";
+                tempBoard[r][c] = "."; // avoid double captures on revisits
+            }
+
+            const last = coords[coords.length - 1];
+            const lr = last.r, lc = last.c;
+
+            // clear origin if different from final
+            if (originR !== -1 && originC !== -1 && !(originR === lr && originC === lc)) {
+                state.board[originR][originC] = ".";
+            }
+
+            // place SKT at final square
+            state.board[lr][lc] = pieceToPlace;
+
+        } else {
+            // ---- Normal move: from -> to ----
+            let idx = 1;
+            let alg = "";
+
+            // from-square
+            while (idx < move.length && /[a-zA-Z]/.test(move[idx])) alg += move[idx++];
+            while (idx < move.length && /[0-9]/.test(move[idx])) alg += move[idx++];
+            if (!alg) throw new Error("Invalid move (no from-square)");
+            const from = fromAlg(alg);
+
+            // optional delimiter
+            if (idx < move.length && (move[idx] === "-" || move[idx] === "x" || move[idx] === ",")) idx++;
+
+            // to-square
+            alg = "";
+            while (idx < move.length && /[a-zA-Z]/.test(move[idx])) alg += move[idx++];
+            while (idx < move.length && /[0-9]/.test(move[idx])) alg += move[idx++];
+            if (!alg) throw new Error("Invalid move (no to-square)");
+            const to = fromAlg(alg);
+
+            if (!inBounds(from.r, from.c) || !inBounds(to.r, to.c)) {
+                throw new Error("Move out of bounds");
+            }
+
+            const movedPiece = state.board[from.r][from.c];
+            const captured = state.board[to.r][to.c];
+
+            updateScoreAndStatus(state, movedPiece, captured, initialSide);
+
+            state.board[to.r][to.c] = movedPiece;
+            state.board[from.r][from.c] = ".";
+        }
+
+        // toggle side & fullmove like in C version:
+        // side is flipped; when side becomes 'r', increment fullmove
+        state.side = (state.side === "r") ? "b" : "r";
+        if (state.side === "r") {
+            const fm = parseInt(state.fullmove, 10) || 1;
+            state.fullmove = String(fm + 1);
+        }
+
+        return boardToFen(state);
+    }
+
+    // ===== fenToMatrix for your MoveGenerator =====
+    // Takes ONLY the board part (before first space) and returns 10x9 matrix
+    // with null for empty squares and piece chars otherwise.
+    function fenToMatrix(boardPart) {
+        const rows = boardPart.split("/");
+        const board = [];
+        for (let r = 0; r < RANKS; r++) {
+            const rowStr = rows[r] || "";
+            const row = [];
+            for (let i = 0; i < rowStr.length; i++) {
+                const ch = rowStr[i];
+                if (/\d/.test(ch)) {
+                    const n = parseInt(ch, 10);
+                    for (let k = 0; k < n; k++) row.push(null);
+                } else {
+                    row.push(ch);
+                }
+            }
+            // pad to 9 columns if needed
+            while (row.length < FILES) row.push(null);
+            board.push(row);
+        }
+        return board;
+    }
+
+    // Expose globally
+    window.MoveApplier = {
+        applyMove,
+        fenToMatrix
+    };
+})();
+
+</script>
+
+
+<script>
+/* movegenerator.js inline */
+<!-- paste the full contents of movegenerator.js here -->
+
+// movegenerator.js
+// JavaScript port of movegenerator.c
+// Exposes: MoveGenerator.generateMoves(board, side)
+// board = 10x9 matrix (null or piece char)
+// side = 'r' or 'b'
+
+(function () {
+    "use strict";
+
+    const RANKS = 10;
+    const FILES = 9;
+
+    function inBounds(r, c) {
+        return r >= 0 && r < RANKS && c >= 0 && c < FILES;
+    }
+
+    function empty(x) {
+        return x === null || x === "." || x === undefined;
+    }
+
+    function isRed(p) {
+        return p && p === p.toUpperCase();
+    }
+
+    function isBlack(p) {
+        return p && p === p.toLowerCase();
+    }
+
+    function toAlg(r, c) {
+        const file = String.fromCharCode("a".charCodeAt(0) + c);
+        const rank = 10 - r;
+        return file + rank.toString();
+    }
+
+    function inRedPalace(r, c) {
+        return r >= 7 && r <= 9 && c >= 3 && c <= 5;
+    }
+
+    function inBlackPalace(r, c) {
+        return r >= 0 && r <= 2 && c >= 3 && c <= 5;
+    }
+
+    function riverCrossed(piece, r) {
+        return isRed(piece) ? r <= 4 : r >= 5;
+    }
+
+    // ============================================================
+    // MOVE EMITTER
+    // ============================================================
+
+    function emitMove(list, piece, fr, fc, tr, tc) {
+        const from = toAlg(fr, fc);
+        const to = toAlg(tr, tc);
+        list.push(piece + from + to);
+    }
+
+    // ============================================================
+    // PIECE GENERATORS
+    // ============================================================
+
+    function genRook(board, r, c, list) {
+        const me = board[r][c];
+        const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+
+        for (const [dr, dc] of dirs) {
+            let nr = r + dr, nc = c + dc;
+            while (inBounds(nr, nc)) {
+                const t = board[nr][nc];
+                if (empty(t)) {
+                    emitMove(list, me, r, c, nr, nc);
+                } else {
+                    if ((isRed(me) && isBlack(t)) || (isBlack(me) && isRed(t))) {
+                        emitMove(list, me, r, c, nr, nc);
+                    }
+                    break;
+                }
+                nr += dr;
+                nc += dc;
+            }
+        }
+    }
+
+    function genHorse(board, r, c, list) {
+        const me = board[r][c];
+        const legs = [[-1,0],[1,0],[0,-1],[0,1]];
+        const jumps = [
+            [[-2,-1],[-2,1]],
+            [[ 2,-1],[ 2,1]],
+            [[-1,-2],[ 1,-2]],
+            [[-1, 2],[ 1, 2]]
+        ];
+
+        for (let i = 0; i < 4; i++) {
+            const lr = r + legs[i][0];
+            const lc = c + legs[i][1];
+            if (!inBounds(lr, lc) || !empty(board[lr][lc])) continue;
+
+            for (let j = 0; j < 2; j++) {
+                const nr = r + jumps[i][j][0];
+                const nc = c + jumps[i][j][1];
+                if (!inBounds(nr, nc)) continue;
+
+                const t = board[nr][nc];
+                if (empty(t) || (isRed(me) && isBlack(t)) || (isBlack(me) && isRed(t))) {
+                    emitMove(list, me, r, c, nr, nc);
+                }
+            }
+        }
+    }
+
+    function genElephant(board, r, c, list) {
+        const me = board[r][c];
+        const deltas = [[-2,-2],[-2,2],[2,-2],[2,2]];
+
+        for (const [dr, dc] of deltas) {
+            const nr = r + dr, nc = c + dc;
+            const er = r + dr/2, ec = c + dc/2;
+
+            if (!inBounds(nr, nc) || !inBounds(er, ec)) continue;
+            if (!empty(board[er][ec])) continue;
+
+            if (isRed(me) && nr <= 4) continue;
+            if (isBlack(me) && nr >= 5) continue;
+
+            const t = board[nr][nc];
+            if (empty(t) || (isRed(me) && isBlack(t)) || (isBlack(me) && isRed(t))) {
+                emitMove(list, me, r, c, nr, nc);
+            }
+        }
+    }
+
+    function genAdvisor(board, r, c, list) {
+        const me = board[r][c];
+        const deltas = [[-1,-1],[-1,1],[1,-1],[1,1]];
+
+        for (const [dr, dc] of deltas) {
+            const nr = r + dr, nc = c + dc;
+            if (!inBounds(nr, nc)) continue;
+
+            if (isRed(me) && !inRedPalace(nr, nc)) continue;
+            if (isBlack(me) && !inBlackPalace(nr, nc)) continue;
+
+            const t = board[nr][nc];
+            if (empty(t) || (isRed(me) && isBlack(t)) || (isBlack(me) && isRed(t))) {
+                emitMove(list, me, r, c, nr, nc);
+            }
+        }
+    }
+
+    function genCannon(board, r, c, list) {
+        const me = board[r][c];
+        const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+
+        for (const [dr, dc] of dirs) {
+            let nr = r + dr, nc = c + dc;
+            let seen = false;
+
+            while (inBounds(nr, nc)) {
+                const t = board[nr][nc];
+
+                if (!seen) {
+                    if (empty(t)) {
+                        emitMove(list, me, r, c, nr, nc);
+                    } else {
+                        seen = true;
+                    }
+                } else {
+                    if (!empty(t)) {
+                        if ((isRed(me) && isBlack(t)) || (isBlack(me) && isRed(t))) {
+                            emitMove(list, me, r, c, nr, nc);
+                        }
+                        break;
+                    }
+                }
+
+                nr += dr;
+                nc += dc;
+            }
+        }
+    }
+
+    function genSoldier(board, r, c, list) {
+        const me = board[r][c];
+        const f = isRed(me) ? -1 : 1;
+
+        // forward
+        let nr = r + f, nc = c;
+        if (inBounds(nr, nc)) {
+            const t = board[nr][nc];
+            if (empty(t) || (isRed(me) && isBlack(t)) || (isBlack(me) && isRed(t))) {
+                emitMove(list, me, r, c, nr, nc);
+            }
+        }
+
+        // sideways after river
+        if (riverCrossed(me, r)) {
+            for (const dc of [-1, 1]) {
+                nr = r;
+                nc = c + dc;
+                if (!inBounds(nr, nc)) continue;
+
+                const t = board[nr][nc];
+                if (empty(t) || (isRed(me) && isBlack(t)) || (isBlack(me) && isRed(t))) {
+                    emitMove(list, me, r, c, nr, nc);
+                }
+            }
+        }
+    }
+
+    // ============================================================
+    // SKT LOGIC
+    // ============================================================
+
+    const SKT_DIRS = [
+        [-1,-1],[-1,0],[-1,1],
+        [ 0,-1],       [ 0,1],
+        [ 1,-1],[ 1,0],[ 1,1]
+    ];
+
+    function isBlockedForSKT(board, r, c, piece) {
+        const occ = board[r][c];
+        if (empty(occ)) return false;
+
+        if (isRed(piece) && isRed(occ)) {
+            return occ.toLowerCase() !== "s";
+        }
+        if (isBlack(piece) && isBlack(occ)) {
+            return occ.toLowerCase() !== "s";
+        }
+        return false;
+    }
+
+    function keepPath(path, len, start) {
+        if (len === 3 &&
+            path[0].r === path[2].r &&
+            path[0].c === path[2].c &&
+            path[1].r === start.r &&
+            path[1].c === start.c)
+            return false;
+
+        if (len === 3 &&
+            path[2].r === start.r &&
+            path[2].c === start.c)
+        {
+            const pts = [start, path[0], path[1], path[2]];
+            const v1x = pts[1].c - pts[0].c;
+            const v1y = pts[1].r - pts[0].r;
+            const v2x = pts[2].c - pts[1].c;
+            const v2y = pts[2].r - pts[1].r;
+            const cross = v1x * v2y - v1y * v2x;
+            if (cross > 0) return false;
+        }
+
+        return true;
+    }
+
+    function emitSKTMoves(board, sr, sc, piece, list) {
+        const startAlg = toAlg(sr, sc);
+        const start = { r: sr, c: sc };
+        const path = [];
+
+        for (let d1 = 0; d1 < 8; d1++) {
+            const p1 = { r: sr + SKT_DIRS[d1][0], c: sc + SKT_DIRS[d1][1] };
+            if (!inBounds(p1.r, p1.c)) continue;
+            if (isBlockedForSKT(board, p1.r, p1.c, piece)) continue;
+
+            path[0] = p1;
+
+            if (keepPath(path, 1, start)) {
+                list.push(piece + startAlg + toAlg(p1.r, p1.c));
+            }
+
+            for (let d2 = 0; d2 < 8; d2++) {
+                const p2 = { r: p1.r + SKT_DIRS[d2][0], c: p1.c + SKT_DIRS[d2][1] };
+                if (!inBounds(p2.r, p2.c)) continue;
+                if (isBlockedForSKT(board, p2.r, p2.c, piece)) continue;
+
+                path[1] = p2;
+
+                if (keepPath(path, 2, start)) {
+                    list.push(piece + startAlg + toAlg(p1.r, p1.c) + toAlg(p2.r, p2.c));
+                }
+
+                for (let d3 = 0; d3 < 8; d3++) {
+                    const p3 = { r: p2.r + SKT_DIRS[d3][0], c: p2.c + SKT_DIRS[d3][1] };
+                    if (!inBounds(p3.r, p3.c)) continue;
+                    if (isBlockedForSKT(board, p3.r, p3.c, piece)) continue;
+
+                    path[2] = p3;
+
+                    if (keepPath(path, 3, start)) {
+                        list.push(
+                            piece +
+                            startAlg +
+                            toAlg(p1.r, p1.c) +
+                            toAlg(p2.r, p2.c) +
+                            toAlg(p3.r, p3.c)
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    // ============================================================
+    // DISPATCHER
+    // ============================================================
+
+    function generateMoves(board, side) {
+        const moves = [];
+
+        for (let r = 0; r < RANKS; r++) {
+            for (let c = 0; c < FILES; c++) {
+                const p = board[r][c];
+                if (empty(p)) continue;
+
+                if (side === "r" && !isRed(p)) continue;
+                if (side === "b" && !isBlack(p)) continue;
+
+                switch (p.toLowerCase()) {
+                    case "r": genRook(board, r, c, moves); break;
+                    case "n": genHorse(board, r, c, moves); break;
+                    case "b": genElephant(board, r, c, moves); break;
+                    case "a": genAdvisor(board, r, c, moves); break;
+                    case "c": genCannon(board, r, c, moves); break;
+                    case "p": genSoldier(board, r, c, moves); break;
+                    case "s": emitSKTMoves(board, r, c, p, moves); break;
+                }
+            }
+        }
+
+        return moves;
+    }
+
+    // expose globally
+    window.MoveGenerator = {
+        generateMoves
+    };
+
+})();
+
+</script>
+
+
+
+
+<script>
+/* --- CONFIG & STATE --- */
+const PIECE_MAP = { R:"車", N:"馬", B:"象", A:"士", K:"帥", C:"炮", P:"兵", r:"車", n:"馬", b:"象", a:"士", k:"將", c:"砲", p:"卒", S:"<div class=\"piece red superking\"></div>", s:"<div class=\"piece black superking\"></div>" };
+
+const VERSES = [
+    "约翰福音 3:16 “因为上帝爱世人，甚至将祂独一的儿子赐给他们，叫一切信祂的人不致灭亡，反得永生。",
+    "马太福音 28:19 所以，你们要去使万民做我的门徒，奉父、子、圣灵的名给他们施洗 ",
+    "约翰一书 5:12 人有上帝的儿子，就有这生命；没有上帝的儿子，就没有这生命。"
+];
+
+const DEFAULT_FEN = "rnbasabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBASABNR r 0 - 0 1";
+
+/* 67 */ let boardState = [];
+/* 68 */ let turn = 'r';
+/* 69 */ let score = 0;
+/* 70 */ let isFlipped = false;
+/* 71 */ let selected = null;
+/* 72 */ let trinityPath = [];
+/* 73 */ let allMovesInMemory = [];
+
+/* 74 */ function loadFen(fen) {
+/* 75 */    try {
+/* 76 */        const parts 
+= fen.split(' ');
+/* 77 */        const rows = parts[0].split('/');
+/* 78 */        boardState = rows.map(row => {
+/* 79 */            let res = [];
+/* 80 */            for (let char of row) {
+/* 81 */                if (isNaN(char)) res.push(char);
+/* 82 */                else for (let i=0; i<parseInt(char); i++) res.push(null);
+/* 83 */            }
+/* 84 */            return res;
+/* 85 */        });
+/* 86 */        if (parts[1]) turn = parts[1];
+/* 87 */        render();
+/* 88 */    } catch (e) { console.error("FEN Error"); }
+/* 89 */ }
+
+/* 90 */ function loadFenFromInput() {
+/* 91 */    const input = document.getElementById('fenInput').value.trim();
+/* 92 */    if (input) loadFen(input);
+/* 93 */ }
+
+/* 94 */ function generateFen() {
+/* 95 */    let fen = "";
+/* 96 */    for (let r = 0; r < 10; r++) {
+/* 97 */        let empty = 0;
+/* 98 */        for (let c = 0; c < 9; c++) {
+/* 99 */            let p = boardState[r][c];
+/* 100 */           if (!p) empty++;
+/* 101 */           else {
+/* 102 */               if (empty > 0) { fen += empty; empty = 0; }
+/* 103 */               fen += p;
+/* 104 */           }
+/* 105 */       }
+/* 106 */       if (empty > 0) fen += empty;
+/* 107 */       if (r < 9) fen += "/";
+/* 108 */   }
+/* 109 */   return `${fen} ${turn} ${score} - 0 1`;
+/* 110 */ }
+
+/* 111 */ function render() {
+/* 112 */    const boardDiv = document.getElementById('board');
+/* 113 */    boardDiv.innerHTML = '';
+/* 114 */    document.getElementById('status').innerText = (turn === 'r' ? "红方走子" : "黑方走子");
+/* 115 */    document.getElementById('finishTrinity').style.display = (trinityPath.length >= 2 ? 'block' : 'none');
+/* 116 */    for (let i = 0; i < 90; i++) {
+/* 117 */        let visualR = Math.floor(i / 9);
+/* 118 */        let visualC = i % 9;
+/* 119 */        let r = isFlipped ? 9 - visualR : visualR;
+/* 120 */        let c = isFlipped ? 8 - visualC : visualC;
+/* 121 */        const cell = document.createElement('div');
+/* 122 */        cell.className = 'cell' + ((r === 4 || r === 5) ? ' river' : '');
+/* 123 */        cell.onclick = () => handleClick(r, c);
+/* 124 */        if (selected && r === selected.r && c === selected.c) cell.classList.add('selected');
+/* 125 */        if (trinityPath.some(p => p.r === r && p.c === c)) cell.classList.add('trinity-path');
+/* 126 */        const p = boardState[r][c];
+/* 127 */        if (p) {
+/* 128 */            const div = document.createElement('div');
+/* 129 */            div.className = 'piece ' + (p === p.toUpperCase() ? 'red' : 'black');
+
+
+/* 130 */            div.innerHTML = PIECE_MAP[p];
+/* 131 */            cell.appendChild(div);
+/* 132 */        }
+/* 133 */        boardDiv.appendChild(cell);
+/* 134 */    }
+/* 135 */ }
+
+/* 136 */ async function runTwoPly() {
+/* 137 */    const output = document.getElementById('moveList');
+/* 138 */    const counter = document.getElementById('counter');
+
+
+/* 139 */ // Grabs the FEN from your new Live Register instead of the static input
+          const fenInput = document.getElementById('liveFenRegister').value.trim() || document.getElementById('fenInput').value.trim();
+
+
+
+/* 140 */    allMovesInMemory = [];
+/* 141 */    output.innerText = `>> INITIALIZING 2-PLY SEARCH...\n`;
+/* 142 */    try {
+/* 143 */        const parts = fenInput.split(' ');
+/* 144 */        const boardSide = parts[1];
+/* 145 */        const opponentSide = (boardSide === 'r') ? 'b' : 'r';
+/* 146 */        const board1 = MoveApplier.fenToMatrix(parts[0]);
+/* 147 */        let ply1 = MoveGenerator.generateMoves(board1, boardSide);
+/* 148 */        for (let m1 of ply1) {
+/* 149 */            let fenAfter = MoveApplier.applyMove(fenInput, m1);
+/* 150 */            let board2 = MoveApplier.fenToMatrix(fenAfter.split(' ')[0]);
+/* 151 */            let ply2 = MoveGenerator.generateMoves(board2, opponentSide);
+/* 152 */            ply2.forEach(m2 => { allMovesInMemory.push(`${m1} ${m2}`); });
+/* 153 */            counter.innerText = `In Memory: ${allMovesInMemory.toLocaleString()} variations`;
+/* 154 */            if (allMovesInMemory.length % 2000 === 0) await new Promise(r => setTimeout(r, 0));
+/* 155 */        }
+/* 156 */        output.innerText += `>> Calculation Complete.\n`;
+/* 157 */    } catch (err) { output.innerText += `\n[ERROR]: ${err.message}`; }
+/* 158 */ }
+
+/* 159 */ function exportMemory() {
+/* 160 */    if (allMovesInMemory.length === 0) return alert("Memory empty!");
+/* 161 */    const blob = new Blob([allMovesInMemory.join('\n')], { type: 'text/plain' });
+/* 162 */    const url = window.URL.createObjectURL(blob);
+/* 163 */    const a = document.createElement('a');
+/* 164 */    a.href = url; a.download = 'skt_moves.txt'; a.click();
+/* 165 */ }
+
+
+
+
+
+/* 166 */ function handleClick(r, c) {
+/* 167 */    const p = boardState[r][c];
+/* 168 */    const isRed = p && p === p.toUpperCase();
+
+             // Check if we are already in the middle of a Trinity move
+             const isPathing = trinityPath.length > 0;
+
+/* 169 */    // ONLY allow a new selection if we are NOT already pathing
+             if (!isPathing && p && ((turn === 'r' && isRed) || (turn === 'b' && !isRed))) {
+/* 170 */        selected = {r, c};
+/* 171 */        trinityPath = (p.toLowerCase() === 'k' || p.toLowerCase() === 's') ? [{r, c}] : [];
+/* 172 */    } else if (selected) {
+/* 173 */        if (isPathing) { 
+                     // IMPORTANT: We add the square to the path even if it's the original square
+/* 174 */            trinityPath.push({r, c}); 
+/* 175 */        } else { 
+/* 176 */            executeStandardMove(selected, {r, c}); 
+                     selected = null; 
+                     updateVerse(); 
+                 }
+/* 177 */    }
+/* 177.2 */    render();
+/* 177.3*/ }
+
+
+
+
+
+/* 178 */ function executeStandardMove(from, to) {
+/* 179 */    boardState[to.r][to.c] = boardState[from.r][from.c];
+/* 180 */    boardState[from.r][from.c] = null;
+/* 181 */    turn = (turn === 'r' ? 'b' : 'r');
+
+
+
+
+/* 182 */ const currentMoveFen = generateFen();
+          document.getElementById('fenInput').value = currentMoveFen;
+          document.getElementById('liveFenRegister').value = currentMoveFen;
+
+
+
+/* 183 */ }
+
+
+
+/* 184 */ function executeTrinityMove() {
+             if (trinityPath.length < 2) return;
+             
+             let path = trinityPath;
+             let startCoords = path[0];
+             let endCoords = path[path.length - 1];
+             let movingPiece = boardState[startCoords.r][startCoords.c];
+
+             // 1. Lift the piece from the starting square
+             boardState[startCoords.r][startCoords.c] = null;
+
+             // 2. Clear all captured pieces (intermediate steps)
+             // We loop through the path but DON'T clear the final destination square yet
+             for (let i = 1; i < path.length - 1; i++) {
+                 boardState[path[i].r][path[i].c] = null;
+             }
+
+             // 3. Drop the piece at the final destination (the last square clicked)
+             boardState[endCoords.r][endCoords.c] = movingPiece;
+
+/* 190 */    turn = (turn === 'r' ? 'b' : 'r');
+/* 191 */    selected = null; 
+             trinityPath = [];
+
+             // Update FEN
+/* 192 */    const trinityMoveFen = generateFen();
+             document.getElementById('fenInput').value = trinityMoveFen;
+             document.getElementById('liveFenRegister').value = trinityMoveFen;
+/* 193 */    updateVerse(); 
+             render();
+/* 194 */ }
+
+
+
+/* 195 */ function updateVerse() {
+/* 196 */    document.getElementById('verseDisplay').innerText = VERSES[Math.floor(Math.random() * VERSES.length)];
+/* 197 */ }
+
+/* 198 */ function copyCurrentFen() {
+/* 199 */    navigator.clipboard.writeText(generateFen());
+/* 200 */    alert("FEN Copied");
+/* 201 */ }
+
+
+
+/*201.1*/
+async function autoTriggerAI(side) {
+    const liveRegister = document.getElementById('liveFenRegister');
+    let currentFen = liveRegister.value.trim();
+
+    // If the register is empty, fallback to the main input
+    if (!currentFen) {
+        currentFen = document.getElementById('fenInput').value.trim();
+    }
+
+    // Logic for AI Red (r)
+    if (side === 'r') {
+        if (currentFen.includes(" b ")) {
+            currentFen = currentFen.replace(" b ", " r ");
+        } else if (!currentFen.includes(" r ")) {
+            currentFen += " r 0 - 0 1";
+        }
+    }
+    // Logic for AI Black (b)
+    else if (side === 'b') {
+        if (currentFen.includes(" r ")) {
+            currentFen = currentFen.replace(" r ", " b ");
+        } else if (!currentFen.includes(" b ")) {
+            currentFen += " b 0 - 0 1";
+        }
+    }
+
+    // Update the registers so the engine sees the change
+    liveRegister.value = currentFen;
+    document.getElementById('fenInput').value = currentFen;
+
+    // Synchronize the internal board state so the visual board matches the FEN
+    loadFen(currentFen);
+
+    console.log(`AI ${side === 'r' ? 'Red' : 'Black'} triggered. FEN set to: ${currentFen}`);
+
+    // STEP 1 — Wait for full 2-ply calculation to finish
+    await runTwoPly();
+
+    // STEP 2 — Now safely run minimax
+    analyzeFirstMoveMinimax();
+}
+
+
+
+
+
+
+
+/* 202 */ function resetGame() { 
+             isFlipped = false; 
+             loadFen(DEFAULT_FEN); 
+             document.getElementById('fenInput').value = DEFAULT_FEN;
+             // This ensures the engine has a FEN to read even before the first move
+             document.getElementById('liveFenRegister').value = DEFAULT_FEN; 
+         }
+
+/* 202.1 */
+/* ============================================================
+   BEST CONTINUATION ANALYZER — TOP 3 UNIQUE FIRST PLY
+   ============================================================ */
+
+function evaluateContinuation(baseFen, line) {
+    line = line.trim();
+    if (!line) return null;
+
+    const moves = line.split(/\s+/);
+    let fen = baseFen;
+
+    for (const mv of moves) {
+        fen = MoveApplier.applyMove(fen, mv);
+    }
+
+    const result = EvaluateFen.evaluate(fen);
+    return {
+        first: moves[0],
+        line,
+        score: result.score,
+        finalFen: result.fen
+    };
+}
+
+function findTopUniqueFirstPly(limit = 3) {
+    const baseFen =
+        document.getElementById("liveFenRegister").value.trim() ||
+        document.getElementById("fenInput").value.trim();
+
+    const sideToMove = baseFen.split(" ")[1]; // 'r' or 'b'
+
+    const memoryText = allMovesInMemory.join(",");
+    if (!memoryText) return [];
+
+    const rawLines = memoryText.split(",");
+    const seen = new Set();
+    const uniqueLines = [];
+
+    for (let raw of rawLines) {
+        const line = raw.trim();
+        if (!line) continue;
+        if (seen.has(line)) continue;
+        seen.add(line);
+        uniqueLines.push(line);
+    }
+
+    // Evaluate all continuations
+    const evaluated = [];
+    for (const line of uniqueLines) {
+        const info = evaluateContinuation(baseFen, line);
+        if (info) evaluated.push(info);
+    }
+
+    // Group by first ply
+    const bestByFirst = new Map();
+
+    for (const item of evaluated) {
+        const first = item.first;
+
+        if (!bestByFirst.has(first)) {
+            bestByFirst.set(first, item);
+        } else {
+            const prev = bestByFirst.get(first);
+
+            if (sideToMove === "r") {
+                // Red maximizes
+                if (item.score > prev.score) bestByFirst.set(first, item);
+            } else {
+                // Black minimizes
+                if (item.score < prev.score) bestByFirst.set(first, item);
+            }
+        }
+    }
+
+    // Convert to array and sort depending on side to move
+    let sorted = Array.from(bestByFirst.values());
+
+    if (sideToMove === "r") {
+        sorted.sort((a, b) => b.score - a.score); // maximize
+    } else {
+        sorted.sort((a, b) => a.score - b.score); // minimize
+    }
+
+    return sorted.slice(0, limit);
+}
+
+function showBestContinuation() {
+    const top = findTopUniqueFirstPly(3);
+    const output = document.getElementById("moveList");
+
+    if (top.length === 0) {
+        output.innerText += "\n\n[ENGINE] No valid continuation found.";
+        return;
+    }
+
+    output.innerText += `\n\n=== TOP 3 UNIQUE FIRST MOVES ===\n`;
+
+    top.forEach((item, idx) => {
+        output.innerText +=
+            `#${idx + 1}: ${item.first}\n` +
+            `Best reply line: ${item.line}\n` +
+            `Score: ${item.score}\n` +
+            `Final FEN: ${item.finalFen}\n\n`;
+    });
+
+    output.innerText += `===========================\n`;
+}
+
+/* 202.2 */
+/* ============================================================
+   TOP 3 UNIQUE FIRST MOVES — SHOW ONLY FEN AFTER FIRST MOVE
+   ============================================================ */
+
+function showTop3FirstMovesOnly() {
+    const baseFen =
+        document.getElementById("liveFenRegister").value.trim() ||
+        document.getElementById("fenInput").value.trim();
+
+    const sideToMove = baseFen.split(" ")[1]; // 'r' or 'b'
+
+    const memoryText = allMovesInMemory.join(",");
+    const output = document.getElementById("moveList");
+
+    if (!memoryText) {
+        output.innerText += "\n\n[ENGINE] No memory to analyze.";
+        return;
+    }
+
+    // Deduplicate full lines
+    const rawLines = memoryText.split(",");
+    const seen = new Set();
+    const unique = [];
+
+    for (let raw of rawLines) {
+        const line = raw.trim();
+        if (!line) continue;
+        if (seen.has(line)) continue;
+        seen.add(line);
+        unique.push(line);
+    }
+
+    // Evaluate only first ply
+    const firstMoveMap = new Map();
+
+    for (const line of unique) {
+        const moves = line.split(/\s+/);
+        const first = moves[0];
+
+        const fenAfter = MoveApplier.applyMove(baseFen, first);
+        const evalResult = EvaluateFen.evaluate(fenAfter);
+
+        if (!firstMoveMap.has(first)) {
+            firstMoveMap.set(first, {
+                first,
+                score: evalResult.score,
+                fen: evalResult.fen
+            });
+        } else {
+            const prev = firstMoveMap.get(first);
+
+            if (sideToMove === "r") {
+                if (evalResult.score > prev.score)
+                    firstMoveMap.set(first, { first, score: evalResult.score, fen: evalResult.fen });
+            } else {
+                if (evalResult.score < prev.score)
+                    firstMoveMap.set(first, { first, score: evalResult.score, fen: evalResult.fen });
+            }
+        }
+    }
+
+    // Sort depending on side to move
+    let sorted = Array.from(firstMoveMap.values());
+
+    if (sideToMove === "r") {
+        sorted.sort((a, b) => b.score - a.score); // maximize
+    } else {
+        sorted.sort((a, b) => a.score - b.score); // minimize
+    }
+
+    sorted = sorted.slice(0, 3);
+
+    // Print results
+    output.innerText += `\n\n=== TOP 3 FIRST MOVES (FEN ONLY) ===\n`;
+
+    sorted.forEach((item, idx) => {
+        output.innerText +=
+            `#${idx + 1}: ${item.first}\n` +
+            `FEN: ${item.fen}\n\n`;
+    });
+
+    output.innerText += `====================================\n`;
+}
+
+/* 202.3 */
+
+
+/* 202.3 */
+
+
+
+
+
+/* ============================================================
+   FIRST MOVE MINIMAX ANALYSIS
+   ============================================================ */
+
+
+/* 202.3 */
+/* ============================================================
+   FIRST MOVE MINIMAX ANALYSIS — WITH LOCAL RECAPTURE FIX
+   ============================================================ */
+
+/* 202.3 */
+/* ============================================================
+   FIRST MOVE MINIMAX ANALYSIS — WITH LOCAL RECAPTURE + RANDOM BEST
+   ============================================================ */
+
+/* --- Helper: parse algebraic square --- */
+function fromAlgLocal(alg) {
+    const fileChar = alg[0];
+    const rankPart = alg.slice(1);
+    const c = fileChar.charCodeAt(0) - "a".charCodeAt(0);
+    const r = 10 - parseInt(rankPart, 10);
+    return { r, c };
+}
+
+/* --- Helper: extract all squares from a move string (handles SKT paths) --- */
+function getMoveSquares(move) {
+    const squares = [];
+    let idx = 1; // skip piece letter
+
+    while (idx < move.length) {
+        let alg = "";
+
+        while (idx < move.length && /[a-zA-Z]/.test(move[idx])) alg += move[idx++];
+        while (idx < move.length && /[0-9]/.test(move[idx])) alg += move[idx++];
+
+        if (!alg) break;
+        squares.push(fromAlgLocal(alg));
+
+        if (idx < move.length && (move[idx] === "-" || move[idx] === "x" || move[idx] === ",")) idx++;
+    }
+
+    return squares;
+}
+
+/* --- Helper: detect if a move is a capture on a given board (10x9 matrix) --- */
+function isCaptureMoveOnBoard(move, board) {
+    const squares = getMoveSquares(move);
+    if (squares.length === 0) return false;
+
+    const dest = squares[squares.length - 1];
+    const target = board[dest.r][dest.c];
+    return target !== null && target !== ".";
+}
+
+/* --- Helper: evaluate reply + one recapture on same square --- */
+function evaluateWithOneRecapture(fenAfterReply, replyMove) {
+    const baseEval = EvaluateFen.evaluate(fenAfterReply).score;
+
+    const parts = fenAfterReply.split(" ");
+    const boardPart = parts[0];
+    const sideToMove = parts[1]; // side that can recapture
+
+    const board = MoveApplier.fenToMatrix(boardPart);
+
+    const replySquares = getMoveSquares(replyMove);
+    if (replySquares.length === 0) return baseEval;
+
+    const captureSq = replySquares[replySquares.length - 1];
+
+    const replies = MoveGenerator.generateMoves(board, sideToMove);
+
+    let best = baseEval;
+
+    for (const mv of replies) {
+        const sqs = getMoveSquares(mv);
+        if (sqs.length === 0) continue;
+
+        const last = sqs[sqs.length - 1];
+        if (last.r !== captureSq.r || last.c !== captureSq.c) continue;
+
+        const fen2 = MoveApplier.applyMove(fenAfterReply, mv);
+        const ev2 = EvaluateFen.evaluate(fen2).score;
+
+        if (ev2 > best) best = ev2;
+    }
+
+    return best;
+}
+
+/* ============================================================
+   FIRST MOVE MINIMAX ANALYSIS (WITH RECAPTURE + RANDOM BEST)
+   ============================================================ */
+
+async function analyzeFirstMoveMinimax() {
+    const output = document.getElementById("moveList");
+    const baseFen =
+        document.getElementById("liveFenRegister").value.trim() ||
+        document.getElementById("fenInput").value.trim();
+
+    if (allMovesInMemory.length === 0) {
+        output.innerText += "\n\n[ENGINE] No memory to analyze.";
+        return;
+    }
+
+    const baseParts = baseFen.split(" ");
+    const sideToMoveNow = baseParts[1]; // 'r' or 'b'
+
+    output.innerText += `\n\n=== FIRST MOVE MINIMAX (SIDE TO MOVE: ${sideToMoveNow}) ===\n`;
+
+    /* 202.3.1 — Deduplicate full lines */
+    const rawLines = allMovesInMemory;
+    const seen = new Set();
+    const unique = [];
+
+    for (let raw of rawLines) {
+        const line = raw.trim();
+        if (!line) continue;
+        if (seen.has(line)) continue;
+        seen.add(line);
+        unique.push(line);
+    }
+
+    /* 202.3.2 — Group by first move */
+    const firstMoveGroups = new Map();
+
+    for (const line of unique) {
+        const moves = line.split(/\s+/);
+        const first = moves[0];
+
+        if (!firstMoveGroups.has(first)) {
+            firstMoveGroups.set(first, []);
+        }
+        firstMoveGroups.get(first).push(line);
+    }
+
+    /* 202.3.3 — Evaluate each first move by its worst reply (with one recapture allowed) */
+    const results = [];
+
+    for (const [firstMove, lines] of firstMoveGroups.entries()) {
+
+        const fenAfterFirst = MoveApplier.applyMove(baseFen, firstMove);
+        const parts = fenAfterFirst.split(" ");
+        const opponentSide = parts[1]; // opponent replies
+
+        const boardMatrix = MoveApplier.fenToMatrix(parts[0]);
+        const replies = MoveGenerator.generateMoves(boardMatrix, opponentSide);
+
+        let bestReplyScore = 99999;
+        let bestReply = null;
+
+        for (const reply of replies) {
+            const fenAfterReply = MoveApplier.applyMove(fenAfterFirst, reply);
+
+            let scoreAfterReply;
+
+            if (isCaptureMoveOnBoard(reply, boardMatrix)) {
+                scoreAfterReply = evaluateWithOneRecapture(fenAfterReply, reply);
+            } else {
+                scoreAfterReply = EvaluateFen.evaluate(fenAfterReply).score;
+            }
+
+            if (scoreAfterReply < bestReplyScore) {
+                bestReplyScore = scoreAfterReply;
+                bestReply = reply;
+            }
+        }
+
+        results.push({
+            firstMove,
+            bestReply,
+            score: bestReplyScore
+        });
+    }
+
+    /* 202.3.4 — Sort by score (Red-centric, higher is better for Red) */
+    results.sort((a, b) => b.score - a.score);
+
+    const top3 = results.slice(0, 3);
+
+    top3.forEach((item, idx) => {
+        output.innerText +=
+            `\n#${idx + 1}: FIRST MOVE: ${item.firstMove}\n` +
+            `   Worst reply: ${item.bestReply}\n` +
+            `   Score after reply (with recapture): ${item.score}\n`;
+    });
+
+    // RANDOM CHOICE among all moves that have the best score
+    if (results.length > 0) {
+        const bestScore = results[0].score;
+        const bestMoves = results.filter(r => r.score === bestScore);
+
+        const chosen = bestMoves[Math.floor(Math.random() * bestMoves.length)];
+
+        output.innerText += `\n[ENGINE] Best score = ${bestScore}. ${bestMoves.length} moves tie.\n`;
+        output.innerText += `[ENGINE] Randomly chosen move for side ${sideToMoveNow}: ${chosen.firstMove}\n`;
+
+
+
+// === AUTO-PLAY THE CHOSEN MOVE ON THE BOARD ===
+try {
+    const newFen = MoveApplier.applyMove(baseFen, chosen.firstMove);
+
+    // Update BOTH FEN fields
+    const topFenField = document.getElementById("fenInput");
+    const bottomFenField = document.getElementById("liveFenRegister");
+
+    if (topFenField) topFenField.value = newFen;
+    if (bottomFenField) bottomFenField.value = newFen;
+
+    output.innerText += `[ENGINE] Move chosen: ${chosen.firstMove}\n`;
+    output.innerText += `[ENGINE] Updating board...\n`;
+
+// Only update verse if the move starts with Superking (S or s)
+if (/^[Ss]/.test(chosen.firstMove)) {
+    updateVerse();}
+
+    // Allow UI to settle, then auto-load the board
+  
+setTimeout(() => {
+    if (typeof loadFenFromInput === "function") {
+        loadFenFromInput();
+    }
+
+    output.innerText += `[ENGINE] Board updated.\n`;
+}, 300);
+
+
+} catch (err) {
+    output.innerText += `[ENGINE ERROR] Could not auto-play move: ${err}\n`;
+}
+    }
+
+    output.innerText += `\n====================================\n`;
+}
+
+
+function flipBoard() { isFlipped = !isFlipped; render(); }
+
+function resetGame() { loadFen(DEFAULT_FEN); document.getElementById('fenInput').value = DEFAULT_FEN; }
+
+/* 204 */ resetGame();
+
+/* 204 */ resetGame();
+
+</script>
+</body>
+</html>
